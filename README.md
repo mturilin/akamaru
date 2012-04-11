@@ -22,6 +22,11 @@ settings.py:
         'django.contrib.auth.backends.ModelBackend',
     )
 
+    INSTALLED_APPS = (
+        ...
+        'akamaru',
+    )
+
 urls.py:
 
     urlpatterns = patterns('',
@@ -29,3 +34,15 @@ urls.py:
         url(r'', include('akamaru.urls')),
     )
 
+Configuration
+------------------
+Setup needed OAuth keys in your settings.py:
+
+    FACEBOOK_APP_ID = ""
+    FACEBOOK_SECRET = ""
+
+Setup urls.py names:
+
+    AKAMARU_LOGIN_OK = "profile"
+    AKAMARU_LOGIN_ERROR = "login-error"
+    AKAMARU_RESOLVE_FORM = "create_user"
