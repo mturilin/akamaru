@@ -64,6 +64,7 @@ INSTALLED_APPS = (
 
 AUTHENTICATION_BACKENDS = (
     'akamaru.backends.facebook.FacebookBackend',
+    'akamaru.backends.vkontakte.VkontakteBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 
@@ -77,8 +78,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 LOGIN_REDIRECT_URL = '/'
 
-FACEBOOK_APP_ID = "319501818095771"
-FACEBOOK_SECRET = "329cb65d3838436acd9abc8b4e4bf799"
+FACEBOOK_APP_ID = "170958219629605"
+FACEBOOK_SECRET = "94c30c5265072b5bdf82174125c2d6f9"
+
+VKONTAKTE_APP_ID = '2806299'
+VKONTAKTE_SECRET = '30euNDsQIJTY1FP3fQrb'
 
 AKAMARU_LOGIN_OK = "profile"
 AKAMARU_LOGIN_ERROR = "login-error"

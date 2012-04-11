@@ -59,18 +59,16 @@ class FacebookBackend(AkamaruBackend):
 
     def authenticate(self, **kwargs):
         fb_session = self.get_session(**kwargs)
-        fb_user = fb_session.me()
 
-        query = SocialUser.objects.filter(backend=self.get_backend_name(), external_user_id=fb_user['id'])
+        if fb_session is not None:
+            fb_user = fb_session.me()
 
-        query_count = query.count()
-        if query_count < 1:
-            return None
-        elif query_count == 1:
-            return query[0].user
-        else:
-            raise BackendError("Integrity Error: More than 1 user for the same user id=%s, backend=%s" % (
-                fb_user['id'], self.get_backend_name()))
+            try:
+                query = SocialUser.objects.get(backend=self.get_backend_name(), external_user_id=fb_user['id'])
+            except SocialUser.DoesNotExist:
+                return None
+            else:
+                query.user
 
     def get_user(self, user_id):
         try:

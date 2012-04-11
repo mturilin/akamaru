@@ -10,6 +10,7 @@ Requirements
 Supported auth backends
 ------------------
 - Facebook
+- Vkontakte
 
 Usage
 ------------------
@@ -18,6 +19,7 @@ settings.py:
     AUTHENTICATION_BACKENDS = (
         ...
         'akamaru.backends.facebook.FacebookBackend',
+        'akamaru.backends.vkontakte.VkontakteBackend',
         ...
         'django.contrib.auth.backends.ModelBackend',
     )
@@ -34,12 +36,16 @@ urls.py:
         url(r'', include('akamaru.urls')),
     )
 
+run syncdb
+
 Configuration
 ------------------
 Setup needed OAuth keys in your settings.py:
 
     FACEBOOK_APP_ID = ""
     FACEBOOK_SECRET = ""
+    VKONTAKTE_APP_ID = '2806299'
+    VKONTAKTE_SECRET = '30euNDsQIJTY1FP3fQrb'
 
 Setup urls.py names:
 
