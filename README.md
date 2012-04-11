@@ -14,6 +14,7 @@ Supported auth backends
 Usage
 ------------------
 settings.py:
+
     AUTHENTICATION_BACKENDS = (
         ...
         'akamaru.backends.facebook.FacebookBackend',
@@ -22,6 +23,7 @@ settings.py:
     )
 
 urls.py:
+
     urlpatterns = patterns('',
         ...
         url(r'', include('akamaru.urls')),
