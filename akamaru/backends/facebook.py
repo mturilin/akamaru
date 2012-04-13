@@ -2,6 +2,7 @@ import json
 import urlparse
 from akamaru import AkamaruBackend, BackendError
 from akamaru.models import SocialUser
+from akamaru.app_settings import FACEBOOK_APP_ID, FACEBOOK_SECRET
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -9,21 +10,9 @@ import requests
 
 __author__ = 'mturilin'
 
-FACEBOOK_APP_ID_KEY = "FACEBOOK_APP_ID"
-FACEBOOK_SECRET_KEY = "FACEBOOK_SECRET"
-
 class FacebookBackend(AkamaruBackend):
     def get_backend_name(self):
         return 'facebook'
-
-    def get_app_id(self):
-        app_id = getattr(settings, FACEBOOK_APP_ID_KEY)
-        if not app_id:
-            raise BackendError("Facebook app config is not found in settings")
-        return app_id
-
-    def get_secret_key(self):
-        return getattr(settings, FACEBOOK_SECRET_KEY)
 
     def create_social_user(self, user, session):
         social_user = SocialUser(user=user, external_user_id=session.me()['id'])
@@ -58,9 +47,8 @@ class FacebookBackend(AkamaruBackend):
         return fb_session
 
     def authenticate(self, **kwargs):
-        fb_session = self.get_session(**kwargs)
-
-        if fb_session is not None:
+        if self.get_backend_name() in kwargs:
+            fb_session = kwargs[self.get_backend_name()]
             fb_user = fb_session.me()
 
             try:
@@ -68,7 +56,7 @@ class FacebookBackend(AkamaruBackend):
             except SocialUser.DoesNotExist:
                 return None
             else:
-                query.user
+                return query.user
 
     def get_user(self, user_id):
         try:
@@ -84,7 +72,7 @@ class FacebookBackend(AkamaruBackend):
 
     def get_authorize_url(self, request, code):
         return "https://graph.facebook.com/oauth/access_token?client_id=%s&redirect_uri=%s&client_secret=%s&code=%s" %\
-               (self.get_app_id(), self.get_redirect_url(request), self.get_secret_key(), code)
+               (FACEBOOK_APP_ID, self.get_redirect_url(request), FACEBOOK_SECRET, code)
 
 
 class FacebookSession(object):

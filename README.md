@@ -42,10 +42,10 @@ Configuration
 ------------------
 Setup needed OAuth keys in your settings.py:
 
-    FACEBOOK_APP_ID = ""
-    FACEBOOK_SECRET = ""
-    VKONTAKTE_APP_ID = '2806299'
-    VKONTAKTE_SECRET = '30euNDsQIJTY1FP3fQrb'
+    FACEBOOK_APP_ID = ''
+    FACEBOOK_SECRET = ''
+    VKONTAKTE_APP_ID = ''
+    VKONTAKTE_SECRET = ''
 
 Setup urls.py names:
 

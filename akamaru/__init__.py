@@ -1,17 +1,10 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
+from akamaru.app_settings import RESOLVE_FORM_KEY, WORKFLOW_SESSION_KEY, LOGIN_OK_KEY, LOGIN_ERROR_KEY, OPERATION_KEY, OPERATION_LOGIN, OPERATION_ASSOCIATE
 
 __author__ = 'mturilin'
 
-RESOLVE_FORM_KEY = "AKAMARU_RESOLVE_FORM"
-WORKFLOW_SESSION_KEY = "AKAMARU_WORKFLOW"
-LOGIN_OK_KEY = "AKAMARU_LOGIN_OK"
-LOGIN_ERROR_KEY = "AKAMARU_LOGIN_ERROR"
-
-OPERATION_KEY = "AKAMARU_OPERATION"
-OPERATION_LOGIN = "LOGIN"
-OPERATION_ASSOCIATE = "ASSOCIATE"
 
 class BackendError(StandardError):
     pass
@@ -19,6 +12,9 @@ class BackendError(StandardError):
 
 def get_callback_url(backend_name):
     return reverse("akamaru-callback", args=(backend_name,))
+
+def get_resolve_url():
+    return reverse("akamaru-resolve")
 
 
 class AkamaruBackend(object):

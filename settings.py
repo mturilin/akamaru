@@ -65,6 +65,9 @@ INSTALLED_APPS = (
 AUTHENTICATION_BACKENDS = (
     'akamaru.backends.facebook.FacebookBackend',
     'akamaru.backends.vkontakte.VkontakteBackend',
+    'akamaru.backends.google.GoogleBackend',
+    'akamaru.backends.trello.TrelloBackend',
+
     'django.contrib.auth.backends.ModelBackend',
     )
 
@@ -84,8 +87,8 @@ FACEBOOK_SECRET = "94c30c5265072b5bdf82174125c2d6f9"
 VKONTAKTE_APP_ID = '2806299'
 VKONTAKTE_SECRET = '30euNDsQIJTY1FP3fQrb'
 
+TRELLO_API_KEY = '728a6bb4aa0911f0698ca28860c92ad0'
+TRELLO_TOKEN = '73c37c2ad45f56c37aeb00df4c1fa9bcddf1babff1f92507c4442c01e1e9e170'
+
 AKAMARU_LOGIN_OK = "profile"
 AKAMARU_LOGIN_ERROR = "login-error"
-AKAMARU_RESOLVE_FORM = "create_user"
-
-

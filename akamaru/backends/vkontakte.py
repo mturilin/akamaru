@@ -2,6 +2,7 @@ import json
 import urlparse
 from akamaru import AkamaruBackend, BackendError
 from akamaru.models import SocialUser
+from akamaru.app_settings import VKONTAKTE_APP_ID, VKONTAKTE_SECRET
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -9,21 +10,9 @@ import requests
 
 __author__ = 'pkorzh'
 
-VKONTAKTE_APP_ID_KEY = "VKONTAKTE_APP_ID"
-VKONTAKTE_SECRET_KEY = "VKONTAKTE_SECRET"
-
 class VkontakteBackend(AkamaruBackend):
     def get_backend_name(self):
         return 'vkontakte'
-
-    def get_app_id(self):
-        app_id = getattr(settings, VKONTAKTE_APP_ID_KEY)
-        if not app_id:
-            raise BackendError("Vkontakte app config is not found in settings")
-        return app_id
-
-    def get_secret_key(self):
-        return getattr(settings, VKONTAKTE_SECRET_KEY)
 
     def create_social_user(self, user, session):
         social_user = SocialUser(user=user, external_user_id=session.me()['id'])
@@ -59,9 +48,8 @@ class VkontakteBackend(AkamaruBackend):
         return vk_session
 
     def authenticate(self, **kwargs):
-        vk_session = self.get_session(**kwargs)
-
-        if vk_session is not None:
+        if self.get_backend_name() in kwargs:
+            vk_session = kwargs[self.get_backend_name()]
             vk_user = vk_session.me()
 
             try:
@@ -69,7 +57,7 @@ class VkontakteBackend(AkamaruBackend):
             except SocialUser.DoesNotExist:
                 return None
             else:
-                query.user
+                return query.user
 
     def get_user(self, user_id):
         try:
@@ -80,12 +68,12 @@ class VkontakteBackend(AkamaruBackend):
 
     def get_login_url(self, request):
         return "http://api.vk.com/oauth/authorize?client_id=%s&redirect_uri=%s" % (
-            self.get_app_id(), self.get_redirect_url(request))
+            VKONTAKTE_APP_ID, self.get_redirect_url(request))
 
 
     def get_authorize_url(self, request, code):
         return "https://api.vk.com/oauth/token?client_id=%s&code=%s&client_secret=%s" %\
-               (self.get_app_id(), code, self.get_secret_key())
+               (VKONTAKTE_APP_ID, code, VKONTAKTE_SECRET)
 
 
 class VkontakteSession(object):

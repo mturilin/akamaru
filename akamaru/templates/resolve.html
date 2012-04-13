@@ -1,0 +1,39 @@
+{% load i18n %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>{% trans 'Login resolve' %}</title>
+    <style type="text/css">
+        label {
+            display:block;
+        }
+        input {
+            display:block;
+        }
+    </style>
+</head>
+<body>
+    <p>{% trans "User doesn't exists for this account" %}</p> 
+    <p>{% trans "Please create new user or associate this account with one of the existing users (requires login and password)" %}</p>
+
+    <div class="create_user">
+        <h1>{% trans 'Create User' %}</h1>
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ create_user_form }}
+            <input type="submit" name="action" value="{% trans 'Create User' %}">
+        </form>
+    </div>
+
+    <div class="associate_user">
+        <h1>{% trans 'Associate with existing user' %}</h1>    
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ login_form }}
+            <input type="submit" value="{% trans 'Associate' %}" name="action">
+        </form>
+    </div>
+</body>
+</html>

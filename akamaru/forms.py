@@ -19,4 +19,3 @@ class CreateUserForm(forms.Form):
             raise forms.ValidationError("Username is not unique")
 
         return username
-

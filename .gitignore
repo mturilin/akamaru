@@ -3,3 +3,5 @@
 /site/
 
 /.idea/
+
+*.DS_Store
