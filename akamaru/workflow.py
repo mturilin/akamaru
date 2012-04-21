@@ -1,5 +1,4 @@
-from akamaru import get_backend_dict, get_resolve_url
-from akamaru.app_settings import RESOLVE_FORM_KEY, LOGIN_ERROR_KEY, LOGIN_OK_KEY
+from akamaru import get_backend_dict, settings_getattr, RESOLVE_FORM_KEY, LOGIN_OK_KEY, LOGIN_ERROR_KEY
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
@@ -19,10 +18,6 @@ class LoginWorkflow(object):
     def get_session(self):
         return self.session
 
-    #
-    #    def error(self, *args, **kwargs):
-    #        raise AkamaruError("Workflow is in the end state. No input expected.")
-
     def authenticate(self, *args, **kwargs):
         request = kwargs['request']
 
@@ -31,14 +26,14 @@ class LoginWorkflow(object):
 
         if user:
             login(request, user)
-            return redirect(reverse(getattr(settings, LOGIN_OK_KEY)))
+            return redirect(reverse(settings_getattr(LOGIN_OK_KEY)))
 
-        resolve_user = get_resolve_url()
+        resolve_user = settings_getattr(RESOLVE_FORM_KEY)
 
         if not resolve_user:
-            return redirect(reverse(getattr(settings, LOGIN_ERROR_KEY)))
+            return redirect(reverse(settings_getattr(LOGIN_ERROR_KEY)))
 
-        return redirect(resolve_user)
+        return redirect(reverse(resolve_user))
 
 
     def create_user(self, request, username, first_name, last_name, email, password):
@@ -56,7 +51,6 @@ class LoginWorkflow(object):
         social_user = self.backend.create_social_user(user, self.session)
         social_user.save()
 
-        login(request, user)
         return user
 
     def is_authenticated(self):

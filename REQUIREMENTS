@@ -1,3 +1,4 @@
 django
 path.py
 requests
+oauthlib

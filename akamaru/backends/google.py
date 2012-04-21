@@ -1,60 +1,67 @@
 import json
 import urlparse
-from akamaru import AkamaruBackend, BackendError
+from akamaru import AkamaruOAuth1Backend, BackendError, settings_getattr
 from akamaru.models import SocialUser
 
 from django.conf import settings
 from django.contrib.auth.models import User
 import requests
 
+from oauthlib.oauth1 import Client
+from oauthlib.oauth1.rfc5849 import SIGNATURE_TYPE_QUERY
+
+from django.conf import settings
+
 __author__ = 'pkorzh'
 
-class GoogleBackend(AkamaruBackend):
-    OAuthGetRequestTokenURL = 'https://www.google.com/accounts/OAuthGetRequestToken'
-    OAuthAuthorizeTokenURL = 'https://www.google.com/accounts/OAuthAuthorizeToken'
-    OAuthGetAccessToken = 'https://www.google.com/accounts/OAuthGetAccessToken'
+GOOGLE_CONSUMER_KEY_KEY = 'GOOGLE_CONSUMER_KEY'
+GOOGLE_CONSUMER_SECRET_KEY = 'GOOGLE_CONSUMER_SECRET'
 
+class GoogleBackend(AkamaruOAuth1Backend):
     def get_backend_name(self):
         return 'google'
 
-    def create_social_user(self, user, session):
-        social_user = SocialUser(user=user, external_user_id=session.me()['id'])
-        social_user.save()
-        social_user.backend = self.get_backend_name()
-        return social_user
+    def get_client_key(self):
+        return settings_getattr(GOOGLE_CONSUMER_KEY_KEY)
 
-    def get_session(self, **kwargs):
-        pass
+    def get_client_secret(self):
+        return settings_getattr(GOOGLE_CONSUMER_SECRET_KEY)
 
-    def authenticate(self, **kwargs):
-        if self.get_backend_name() in kwargs:
-            g_session = kwargs[self.get_backend_name()]
-            g_user = g_session.me()
+    def get_request_token_uri(self):
+        return 'https://www.google.com/accounts/OAuthGetRequestToken?scope=https://www.googleapis.com/auth/userinfo.profile'   
 
-            try:
-                query = SocialUser.objects.get(backend=self.get_backend_name(), external_user_id=vk_user['id'])
-            except SocialUser.DoesNotExist:
-                return None
-            else:
-                return query.user
+    def get_authorize_token_uri(self):
+        return 'https://www.google.com/accounts/OAuthAuthorizeToken'
 
-    def get_user(self, user_id):
-        try:
-            return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return None
+    def get_access_token_uri(self):
+        return 'https://www.google.com/accounts/OAuthGetAccessToken'  
 
-
-    def get_login_url(self, request):
-        return ''
-
-
-    def get_authorize_url(self, request, code):
-        return ''
+    def _get_session(self, oauth_token, oauth_token_secret):
+        return GoogleSession(oauth_token, oauth_token_secret, self.get_client_key(), self.get_client_secret())
 
 
 class GoogleSession(object):
-    pass
+    URL_USER = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json'
 
+    def __init__(self, oauth_token, oauth_token_secret, client_key, client_secret):
+        self.oauth_token_secret = oauth_token_secret
+        self.oauth_token = oauth_token
+        self.client_key = client_key
+        self.client_secret = client_secret
 
+    def me(self):
+        client = Client(client_key = unicode(self.client_key), 
+            client_secret = unicode(self.client_secret), 
+            resource_owner_key = unicode(self.oauth_token), 
+            resource_owner_secret = unicode(self.oauth_token_secret),
+            signature_type = SIGNATURE_TYPE_QUERY)
 
+        url = client.sign(unicode(GoogleSession.URL_USER))[0]
+        res = json.loads(requests.get(url).text)
+
+        res.update({
+            'first_name': res.get('given_name'),
+            'last_name': res.get('family_name')
+        })
+
+        return res

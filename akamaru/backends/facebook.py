@@ -1,8 +1,8 @@
 import json
 import urlparse
-from akamaru import AkamaruBackend, BackendError
+
+from akamaru import AkamaruBackend, BackendError, settings_getattr
 from akamaru.models import SocialUser
-from akamaru.app_settings import FACEBOOK_APP_ID, FACEBOOK_SECRET
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -10,15 +10,18 @@ import requests
 
 __author__ = 'mturilin'
 
+FACEBOOK_APP_ID_KEY = 'FACEBOOK_APP_ID'
+FACEBOOK_SECRET_KEY = 'FACEBOOK_SECRET'
+
 class FacebookBackend(AkamaruBackend):
     def get_backend_name(self):
         return 'facebook'
 
-    def create_social_user(self, user, session):
-        social_user = SocialUser(user=user, external_user_id=session.me()['id'])
-        social_user.save()
-        social_user.backend = self.get_backend_name()
-        return social_user
+    def get_client_key(self):
+        return settings_getattr(FACEBOOK_APP_ID_KEY)
+
+    def get_client_secret(self):
+        return settings_getattr(FACEBOOK_SECRET_KEY)
 
     def get_session(self, **kwargs):
         fb_session = None
@@ -41,38 +44,19 @@ class FacebookBackend(AkamaruBackend):
             if 'access_token' not in res_data:
                 raise BackendError("Facebook didn't return access_token. Response: %s" % request_result.text)
 
-            access_token = res_data['access_token']
+            access_token = res_data['access_token'][0]
             fb_session = FacebookSession(access_token)
 
         return fb_session
 
-    def authenticate(self, **kwargs):
-        if self.get_backend_name() in kwargs:
-            fb_session = kwargs[self.get_backend_name()]
-            fb_user = fb_session.me()
-
-            try:
-                query = SocialUser.objects.get(backend=self.get_backend_name(), external_user_id=fb_user['id'])
-            except SocialUser.DoesNotExist:
-                return None
-            else:
-                return query.user
-
-    def get_user(self, user_id):
-        try:
-            return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return None
-
-
     def get_login_url(self, request):
         return "https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s" % (
-            self.get_app_id(), self.get_redirect_url(request))
+            self.get_client_key(), self.get_redirect_url(request))
 
 
     def get_authorize_url(self, request, code):
         return "https://graph.facebook.com/oauth/access_token?client_id=%s&redirect_uri=%s&client_secret=%s&code=%s" %\
-               (FACEBOOK_APP_ID, self.get_redirect_url(request), FACEBOOK_SECRET, code)
+               (self.get_client_key(), self.get_redirect_url(request), self.get_client_secret(), code)
 
 
 class FacebookSession(object):

@@ -20,5 +20,14 @@ Social logins:
     </li>
     {% endfor %}
 </ul>
+
+Associate another social account:
+<ul>
+    <li><a href="{% url akamaru-login 'facebook' %}">Facebook Login</a></li>
+    <li><a href="{% url akamaru-login 'vkontakte' %}">Vkontakte Login</a></li>
+    <li><a href="{% url akamaru-login 'google' %}">Google Login</a></li>
+    <li><a href="{% url akamaru-login 'trello' %}">Trello Login</a></li>
+</ul>
+
 </body>
 </html>
