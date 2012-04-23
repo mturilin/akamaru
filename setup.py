@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -13,7 +13,7 @@ setup(
     license = "BSD",
     keywords = "django social auth google facebook trello vkontakte",
     url = "https://github.com/mturilin/akamaru",
-    packages=['akamaru', 'akamaru_demo'],
+    packages = find_packages(),
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 1 - Alpha",
