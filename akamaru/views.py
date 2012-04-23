@@ -1,5 +1,4 @@
-from akamaru import get_backend_dict, get_workflow, set_workflow, login_ok_redirect
-from akamaru.exceptions import AkamaruError
+from akamaru import get_backend_dict, get_workflow, set_workflow, login_ok_redirect, AkamaruError
 from akamaru.workflow import LoginWorkflow
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate
