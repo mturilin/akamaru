@@ -30,6 +30,14 @@ class BackendError(StandardError):
     pass
 
 
+class AkamaruSession(object):
+    def get_api_url(self, *args, **kwargs):
+        raise NotImplementedError("Subclasses must implement this method.")
+
+    def me(self):
+        raise NotImplementedError("Subclasses must implement this method.")
+
+
 class AkamaruBackend(object):
     def get_client_key(self):
         raise NotImplementedError("Subclasses must implement this method.")

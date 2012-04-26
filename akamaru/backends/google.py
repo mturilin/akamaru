@@ -1,6 +1,6 @@
 import json
 import urlparse
-from akamaru import AkamaruOAuth1Backend, BackendError, settings_getattr
+from akamaru import AkamaruOAuth1Backend, AkamaruSession, BackendError, settings_getattr
 from akamaru.models import SocialUser
 
 from django.conf import settings
@@ -40,9 +40,7 @@ class GoogleBackend(AkamaruOAuth1Backend):
         return GoogleSession(oauth_token, oauth_token_secret, self.get_client_key(), self.get_client_secret())
 
 
-class GoogleSession(object):
-    URL_USER = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json'
-
+class GoogleSession(AkamaruSession):
     def __init__(self, oauth_token, oauth_token_secret, client_key, client_secret):
         self.oauth_token_secret = oauth_token_secret
         self.oauth_token = oauth_token
@@ -56,12 +54,9 @@ class GoogleSession(object):
             resource_owner_secret = unicode(self.oauth_token_secret),
             signature_type = SIGNATURE_TYPE_QUERY)
 
-        url = client.sign(unicode(GoogleSession.URL_USER))[0]
+        url = client.sign(unicode('https://www.googleapis.com/oauth2/v1/userinfo?alt=json'))[0]
+        
         res = json.loads(requests.get(url).text)
-
-        res.update({
-            'first_name': res.get('given_name'),
-            'last_name': res.get('family_name')
-        })
+        res.update({'first_name': res.get('given_name'), 'last_name': res.get('family_name')})
 
         return res

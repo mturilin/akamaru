@@ -1,6 +1,6 @@
 import json
 import urlparse
-from akamaru import AkamaruOAuth1Backend, BackendError, settings_getattr
+from akamaru import AkamaruOAuth1Backend, AkamaruSession, BackendError, settings_getattr
 from akamaru.models import SocialUser
 
 from django.conf import settings
@@ -34,7 +34,7 @@ class TrelloBackend(AkamaruOAuth1Backend):
         return TrelloSession(oauth_token, oauth_token_secret, self.get_client_key())
 
 
-class TrelloSession(object):
+class TrelloSession(AkamaruSession):
     def __init__(self, oauth_token, oauth_token_secret, client_key):
         self.oauth_token_secret = oauth_token_secret
         self.oauth_token = oauth_token

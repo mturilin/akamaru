@@ -1,7 +1,8 @@
 import json
 import urlparse
+from urllib import urlencode
 
-from akamaru import AkamaruBackend, BackendError, settings_getattr
+from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
 from akamaru.models import SocialUser
 
 from django.conf import settings
@@ -61,32 +62,29 @@ class VkontakteBackend(AkamaruBackend):
                (self.get_client_key(), code, self.get_client_secret())
 
 
-class VkontakteSession(object):
-    URL_USER = "https://api.vk.com/method/users.get"
-
+class VkontakteSession(AkamaruSession):
     def __init__(self, access_token, user_id): 
         self.access_token = access_token
         self.user_id = user_id
 
-    def vk_api(self, url, user_id):
-        resp = json.loads(requests.get(url, params={"access_token": self.access_token, "uids": user_id}).text)
+    def get_api_url(self, vk_method, *args, **kwargs):
+        kwargs.update({'access_token': self.access_token})
 
-        if 'response' in resp:
-            resp = resp['response'][0]
-        else:
-            raise BackendError("Vkontakte session error.")
+        url = "https://api.vk.com/method/%s" % vk_method
 
-        resp.update({
-            'id': resp['uid']
-        })
+        if kwargs:
+            url += "?" + urlencode(kwargs)
 
-        return resp
-
-    def user(self, user_id):
-        return self.vk_api(VkontakteSession.URL_USER, user_id)
+        return url
 
     def me(self):
-        return self.user(self.user_id)
+        url = self.get_api_url('users.get', **{"uids": self.user_id})
+
+        resp = json.loads(requests.get(url).text)
+        profile = resp['response'][0]
+        profile.update({'id': profile['uid']})
+
+        return profile
 
 
 

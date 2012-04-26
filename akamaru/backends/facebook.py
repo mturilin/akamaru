@@ -1,7 +1,7 @@
 import json
 import urlparse
 
-from akamaru import AkamaruBackend, BackendError, settings_getattr
+from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
 from akamaru.models import SocialUser
 
 from django.conf import settings
@@ -59,19 +59,23 @@ class FacebookBackend(AkamaruBackend):
                (self.get_client_key(), self.get_redirect_url(request), self.get_client_secret(), code)
 
 
-class FacebookSession(object):
-    URL_USER = "https://graph.facebook.com/"
+class FacebookSession(AkamaruSession):
+    def __init__(self, access_token): 
+        self.access_token = access_token
 
-    def __init__(self, access_token): self.access_token = access_token
+    def get_api_url(self, fb_username, *args, **kwargs):
+        kwargs.update({'access_token': self.access_token})
 
-    def open_graph(self, url):
-        return json.loads(requests.get(url, params={"access_token": self.access_token}).text)
+        url = "https://graph.facebook.com/%s" % fb_username
 
-    def user(self, username):
-        return self.open_graph(FacebookSession.URL_USER + username)
+        if kwargs:
+            url += "?" + urlencode(kwargs)
+
+        return url
 
     def me(self):
-        return self.user("me")
+        url = self.get_api_url('me')
+        return json.loads(requests.get(url).text)
 
 
 
