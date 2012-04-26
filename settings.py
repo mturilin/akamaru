@@ -59,6 +59,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.admin',
     'akamaru',
+    'akamaru.contrib.resolve',
     'akamaru_demo',
     )
 
@@ -81,8 +82,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 LOGIN_REDIRECT_URL = '/'
 
-FACEBOOK_APP_ID = ""
-FACEBOOK_SECRET = ""
+FACEBOOK_APP_ID = ''
+FACEBOOK_SECRET = ''
 
 VKONTAKTE_APP_ID = ''
 VKONTAKTE_SECRET = ''
@@ -95,4 +96,4 @@ GOOGLE_CONSUMER_SECRET = ''
 
 AKAMARU_LOGIN_OK = "profile"
 AKAMARU_LOGIN_ERROR = "login-error"
-AKAMARU_RESOLVE_FORM = "resolve"
+AKAMARU_RESOLVE_FORM = "akamaru-resolve"

@@ -46,3 +46,6 @@ class TrelloSession(AkamaruSession):
 
         return res_data
 
+    def is_token_expired(self):
+        return False
+

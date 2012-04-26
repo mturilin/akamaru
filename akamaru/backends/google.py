@@ -60,3 +60,6 @@ class GoogleSession(AkamaruSession):
         res.update({'first_name': res.get('given_name'), 'last_name': res.get('family_name')})
 
         return res
+
+    def is_token_expired(self):
+        return False

@@ -7,7 +7,6 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', index),
     url(r'^profile/$', profile, name='profile'),
-    url(r'^resolve/$', resolve, name='resolve'),
     url(r'^akamaru/', include('akamaru.urls')),
 )
 

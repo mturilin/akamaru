@@ -37,6 +37,9 @@ class AkamaruSession(object):
     def me(self):
         raise NotImplementedError("Subclasses must implement this method.")
 
+    def is_token_expired(self):
+        raise NotImplementedError("Subclasses must implement this method.")
+
 
 class AkamaruBackend(object):
     def get_client_key(self):

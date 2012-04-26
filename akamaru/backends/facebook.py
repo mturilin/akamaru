@@ -77,5 +77,7 @@ class FacebookSession(AkamaruSession):
         url = self.get_api_url('me')
         return json.loads(requests.get(url).text)
 
+    def is_token_expired(self):
+        return False
 
 

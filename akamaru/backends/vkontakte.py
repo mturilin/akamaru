@@ -86,5 +86,8 @@ class VkontakteSession(AkamaruSession):
 
         return profile
 
+    def is_token_expired(self):
+        return False
+
 
 

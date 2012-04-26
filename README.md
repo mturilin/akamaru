@@ -33,6 +33,7 @@ settings.py:
     INSTALLED_APPS = (
         ...
         'akamaru',
+        'akamaru.contrib.resolve',
     )
 
 urls.py:
@@ -64,4 +65,4 @@ Setup urls.py names:
 
     AKAMARU_LOGIN_OK = "profile"
     AKAMARU_LOGIN_ERROR = "login-error"
-    AKAMARU_RESOLVE_FORM = "resolve"
+    AKAMARU_RESOLVE_FORM = "akamaru-resolve"
