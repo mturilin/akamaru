@@ -97,3 +97,8 @@ GOOGLE_CONSUMER_SECRET = ''
 AKAMARU_LOGIN_OK = "profile"
 AKAMARU_LOGIN_ERROR = "login-error"
 AKAMARU_RESOLVE_FORM = "akamaru-resolve"
+
+try:
+    from local_settings import *
+except:
+    pass

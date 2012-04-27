@@ -87,6 +87,15 @@ class VkontakteSession(AkamaruSession):
         return profile
 
     def is_token_expired(self):
+        """
+            http://vk.com/developers.php?oid=-1&p=users.get
+        """
+        url = self.get_api_url('users.get', **{"uids": self.user_id})
+        data = json.loads(requests.get(url).text)
+
+        if 'error' in data:
+            return 5 == data['error'].get('error_code', 0)
+
         return False
 
 

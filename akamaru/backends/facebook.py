@@ -78,6 +78,15 @@ class FacebookSession(AkamaruSession):
         return json.loads(requests.get(url).text)
 
     def is_token_expired(self):
+        """
+            http://developers.facebook.com/blog/post/2011/05/13/how-to--handle-expired-access-tokens/
+        """
+        url = self.get_api_url('me')
+        data = json.loads(requests.get(url).text)
+        
+        if 'error' in data:
+            return 'OAuthException' == data['error'].get('type', '')
+
         return False
 
 

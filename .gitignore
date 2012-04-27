@@ -1,7 +1,5 @@
 *.pyc
-
-/site/
-
-/.idea/
-
 *.DS_Store
+local_settings.py
+/site/
+/.idea/
