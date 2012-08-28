@@ -15,6 +15,7 @@ setup(
     url = "https://github.com/mturilin/akamaru",
     packages = find_packages(exclude=['demo']),
     long_description=read('README.md'),
+    include_package_data = True,
     classifiers=[
         "Development Status :: 1 - Alpha",
         "Topic :: Utilities",
