@@ -25,5 +25,8 @@ setup(
         'path.py',
         'requests',
         'oauthlib',
-    ]
+    ],
+    package_data = {
+        '': ['static/kiba/coffee/*.coffee', 'static/kiba/js/*.js', 'templates/kiba/*.html', 'templates/resolve/*.html']
+    }
 )
