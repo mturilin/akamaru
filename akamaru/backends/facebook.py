@@ -1,5 +1,6 @@
 import json
 import urlparse
+from urllib import urlencode
 
 from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
 from akamaru.models import SocialUser

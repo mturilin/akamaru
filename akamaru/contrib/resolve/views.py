@@ -43,4 +43,4 @@ def resolve(request):
     else:
         request.session.set_test_cookie()
 
-    return render(request, "resolve.html", dict(create_user_form=create_user_form, login_form=login_form))
+    return render(request, "resolve/resolve.html", dict(create_user_form=create_user_form, login_form=login_form))

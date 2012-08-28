@@ -15,7 +15,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'site/test.db',
+        'NAME': 'test.db',
         }
 }
 
@@ -26,9 +26,12 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 
+STATIC_URL = '/static/'
+STATIC_ROOT= ''
+
 MEDIA_ROOT = ''
 ADMIN_MEDIA_PREFIX = '/admin-media/'
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 SECRET_KEY = 't2eo^kd%k+-##ml3@_x__$j0(ps4p0q6eg*c4ttp9d2n(t!iol'
 
@@ -36,6 +39,11 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
     )
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -58,9 +66,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
+    'django.contrib.staticfiles',
+
     'akamaru',
     'akamaru.contrib.resolve',
-    'akamaru_demo',
+    'akamaru.contrib.kiba',
     )
 
 AUTHENTICATION_BACKENDS = (
@@ -77,13 +87,14 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
+    'django.core.context_processors.static',
     'django.contrib.messages.context_processors.messages',
     )
 
 LOGIN_REDIRECT_URL = '/'
 
-FACEBOOK_APP_ID = ''
-FACEBOOK_SECRET = ''
+FACEBOOK_APP_ID = ""
+FACEBOOK_SECRET = ""
 
 VKONTAKTE_APP_ID = ''
 VKONTAKTE_SECRET = ''
@@ -91,8 +102,11 @@ VKONTAKTE_SECRET = ''
 TRELLO_API_KEY = ''
 TRELLO_TOKEN = ''
 
-GOOGLE_CONSUMER_KEY = ''
-GOOGLE_CONSUMER_SECRET = ''
+GOOGLE_CONSUMER_KEY = 'anonymous'
+GOOGLE_CONSUMER_SECRET = 'anonymous'
+
+GOOGLE_CLIENT_ID = ''
+GOOGLE_CLIENT_SECRET = ''
 
 AKAMARU_LOGIN_OK = "profile"
 AKAMARU_LOGIN_ERROR = "login-error"

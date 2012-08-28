@@ -13,11 +13,16 @@ setup(
     license = "BSD",
     keywords = "django social auth google facebook trello vkontakte",
     url = "https://github.com/mturilin/akamaru",
-    packages = find_packages(),
+    packages = find_packages(exclude=['demo']),
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 1 - Alpha",
         "Topic :: Utilities",
         "License :: OSI Approved :: BSD License",
     ],
+    install_requires=[
+        'path.py',
+        'requests',
+        'oauthlib',
+    ]
 )

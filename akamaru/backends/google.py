@@ -28,7 +28,7 @@ class GoogleBackend(AkamaruOAuth1Backend):
         return settings_getattr(GOOGLE_CONSUMER_SECRET_KEY)
 
     def get_request_token_uri(self):
-        return 'https://www.google.com/accounts/OAuthGetRequestToken?scope=https://www.googleapis.com/auth/userinfo.profile'   
+        return 'https://www.google.com/accounts/OAuthGetRequestToken?scope=https://www.googleapis.com/auth/plus.me'
 
     def get_authorize_token_uri(self):
         return 'https://www.google.com/accounts/OAuthAuthorizeToken'
