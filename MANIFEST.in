@@ -1,0 +1,3 @@
+include akamaru/contrib/resolve/templates/*
+include akamaru/contrib/kiba/templates/*
+include akamaru/contrib/kiba/static/*
