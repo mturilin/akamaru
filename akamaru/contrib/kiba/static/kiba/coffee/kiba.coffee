@@ -28,11 +28,11 @@ jQuery ->
 
 
     class window.GoogleBackend
-        scope: 'https://www.googleapis.com/auth/plus.me'
+        @scope: 'https://www.googleapis.com/auth/plus.me'
 
         @login: (callback)->
             that = @
-            gapi.auth.authorize({client_id: window.GOOGLE_CLIENT_ID, scope: @scope}, (authResult) ->
+            gapi.auth.authorize({client_id: window.GOOGLE_CLIENT_ID, scope: GoogleBackend.scope}, (authResult) ->
                 if authResult && not authResult.error
                     gapi.client.load('plus', 'v1', ->
                         request = gapi.client.plus.people.get 'userId': 'me'

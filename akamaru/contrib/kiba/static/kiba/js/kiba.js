@@ -48,14 +48,14 @@
 
       function GoogleBackend() {}
 
-      GoogleBackend.prototype.scope = 'https://www.googleapis.com/auth/plus.me';
+      GoogleBackend.scope = 'https://www.googleapis.com/auth/plus.me';
 
       GoogleBackend.login = function(callback) {
         var that;
         that = this;
         return gapi.auth.authorize({
           client_id: window.GOOGLE_CLIENT_ID,
-          scope: this.scope
+          scope: GoogleBackend.scope
         }, function(authResult) {
           if (authResult && !authResult.error) {
             return gapi.client.load('plus', 'v1', function() {
