@@ -12,6 +12,9 @@
         this.last_name = '';
         this.avatar = '';
         this.id = '';
+        this.city = '';
+        this.country = '';
+        this.access_token = '';
       }
 
       KibaSession.initWith = function(resp) {};
@@ -85,12 +88,32 @@
       }
 
       VkontakteSession.initWith = function(resp) {
-        var session;
+        var dfd, dfd_counter, session;
         session = new VkontakteSession();
-        session.first_name = resp.user.first_name;
-        session.last_name = resp.user.last_name;
-        session.id = resp.user.uid;
-        return session;
+        session.first_name = resp.first_name;
+        session.last_name = resp.last_name;
+        session.id = resp.uid;
+        dfd = $.Deferred();
+        dfd_counter = 0;
+        VK.Api.call('getCities', {
+          cids: resp.city
+        }, function(r) {
+          dfd_counter += 1;
+          session.city = r.response[0].name;
+          if (dfd_counter === 2) {
+            return dfd.resolve(session);
+          }
+        });
+        VK.Api.call('getCountries', {
+          cids: resp.country
+        }, function(r) {
+          dfd_counter += 1;
+          session.country = r.response[0].name;
+          if (dfd_counter === 2) {
+            return dfd.resolve(session);
+          }
+        });
+        return dfd;
       };
 
       VkontakteSession.prototype.getFriends = function(callback) {
@@ -119,7 +142,9 @@
             uids: response.session.user.id,
             fields: VkontakteBackend.fields
           }, function(r) {
-            return callback(VkontakteSession.initWith(response.session));
+            return VkontakteSession.initWith(r.response[0]).done(function(session) {
+              return callback(session);
+            });
           });
         }, settings);
       };
@@ -135,12 +160,23 @@
         FacebookSession.__super__.constructor.call(this);
       }
 
-      FacebookSession.initWith = function(resp) {
-        var session;
+      FacebookSession.initWith = function(response, me) {
+        var location_parts, session;
         session = new FacebookSession();
-        session.first_name = resp.first_name;
-        session.last_name = resp.last_name;
-        return session.id = resp.id;
+        session.first_name = me.first_name;
+        session.last_name = me.last_name;
+        session.id = me.id;
+        session.email = me.email;
+        session.access_token = response.authResponse.accessToken;
+        location_parts = me.location.name.split(', ');
+        if (location_parts.length >= 2) {
+          session.city = location_parts[0];
+          session.country = location_parts[1];
+        } else {
+          session.city = me.location;
+          session.country = '';
+        }
+        return session;
       };
 
       FacebookSession.prototype.getFriends = function(callback) {
@@ -183,9 +219,11 @@
           };
         }
         return FB.login(function(response) {
-          return FB.api('/me', function(me) {
-            return callback(FacebookSession.initWith(me));
-          });
+          if (response.authResponse) {
+            return FB.api('/me', function(me) {
+              return callback(FacebookSession.initWith(response, me));
+            });
+          }
         }, scope);
       };
 

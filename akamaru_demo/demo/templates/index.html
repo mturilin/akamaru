@@ -11,13 +11,19 @@
 
     <script type="text/javascript">
         $(function(){
-            function renderFriends(session){
+            function writeP(innerText) {
+                $('#info').append('<p>' + innerText + '</p>')
+            }
+
+            function __postBack(session){
                 $('#info').empty();
-                session.getFriends(function(friends){
-                    for (var i = friends.length - 1; i >= 0; i--) {
-                        $('#info').append('<p>' + friends[i].first_name + ' ' + friends[i].last_name + '</p>')
-                    };
-                });
+
+                writeP(session.id);
+                writeP(session.access_token);
+                writeP(session.first_name);
+                writeP(session.last_name);
+                writeP(session.city);
+                writeP(session.country);
             };
 
             $('#login-google').click(function(){
@@ -27,13 +33,13 @@
             });
             $('#login-vk').click(function(){
                 VkontakteBackend.login(function(session){
-                    renderFriends(session);
+                    __postBack(session);
                 });
                 return false;
             });
             $('#login-fb').click(function(){
                 FacebookBackend.login(function(session){
-                    renderFriends(session);
+                    __postBack(session);
                 });
                 return false;
             });
