@@ -71,6 +71,7 @@ INSTALLED_APPS = (
     'akamaru',
     'akamaru.contrib.resolve',
     'akamaru.contrib.kiba',
+    'demo'
     )
 
 AUTHENTICATION_BACKENDS = (
@@ -93,24 +94,20 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 LOGIN_REDIRECT_URL = '/'
 
-FACEBOOK_APP_ID = ""
-FACEBOOK_SECRET = ""
+FACEBOOK_APP_ID = "170958219629605"
+FACEBOOK_SECRET = "94c30c5265072b5bdf82174125c2d6f9"
 
-VKONTAKTE_APP_ID = ''
-VKONTAKTE_SECRET = ''
+VKONTAKTE_APP_ID = '2642738'
+VKONTAKTE_SECRET = 'oKJ4yoTybg6qoqugUMeY'
 
-TRELLO_API_KEY = ''
-TRELLO_TOKEN = ''
+TRELLO_API_KEY = '728a6bb4aa0911f0698ca28860c92ad0'
+TRELLO_TOKEN = '73c37c2ad45f56c37aeb00df4c1fa9bcddf1babff1f92507c4442c01e1e9e170'
 
 GOOGLE_CONSUMER_KEY = 'anonymous'
 GOOGLE_CONSUMER_SECRET = 'anonymous'
 
-GOOGLE_CLIENT_ID = ''
-GOOGLE_CLIENT_SECRET = ''
-
-AKAMARU_LOGIN_OK = "profile"
-AKAMARU_LOGIN_ERROR = "login-error"
-AKAMARU_RESOLVE_FORM = "akamaru-resolve"
+GOOGLE_CLIENT_ID = '1018162325150.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = 'TE7bE_kGqoDZ4HXyccohb6kC'
 
 try:
     from local_settings import *

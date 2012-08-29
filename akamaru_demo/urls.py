@@ -1,4 +1,4 @@
-from views import index, profile
+from demo.views import index, profile
 from django.conf.urls.defaults import patterns, url, include
 
 urlpatterns = patterns('',

@@ -4,8 +4,12 @@ jQuery ->
             @first_name = ''
             @last_name = ''
             @avatar = ''
+            @id = ''
 
         @initWith: (resp) ->
+
+        getFriends: (callback) ->
+            []
 
 
     class GoogleSession extends KibaSession
@@ -26,7 +30,7 @@ jQuery ->
     class window.GoogleBackend
         scope: 'https://www.googleapis.com/auth/plus.me'
 
-        @login: (@callback)->
+        @login: (callback)->
             that = @
             gapi.auth.authorize({client_id: window.GOOGLE_CLIENT_ID, scope: @scope}, (authResult) ->
                 if authResult && not authResult.error
@@ -40,6 +44,8 @@ jQuery ->
 
 
     class VkontakteSession extends KibaSession
+        @fields: 'uid,first_name,last_name,nickname,sex,bdate,city,country,photo,photo_medium,photo_big'
+
         constructor: ->
             super()
 
@@ -47,15 +53,25 @@ jQuery ->
             session = new VkontakteSession()
             session.first_name = resp.user.first_name
             session.last_name = resp.user.last_name
+            session.id = resp.user.uid
 
             session
 
+        getFriends: (callback) ->
+            VK.Api.call('friends.get', {fields: VkontakteSession.fields}, (r) ->
+                callback(r.response)
+            )
+
 
     class window.VkontakteBackend
-        @login: (@callback)->
+        @fields: 'city,country,photo,photo_medium,photo_medium_rec,photo_big,photo_rec'
+
+        @login: (callback, settings=2)->
             VK.Auth.login((response) ->
-                callback(VkontakteSession.initWith(response.session))
-            )
+                VK.Api.call('users.get', {uids: response.session.user.id, fields: VkontakteBackend.fields}, (r) ->
+                    callback(VkontakteSession.initWith(response.session))
+                )
+            ,settings)
 
 
     class FacebookSession extends KibaSession
@@ -66,12 +82,33 @@ jQuery ->
             session = new FacebookSession()
             session.first_name = resp.first_name
             session.last_name = resp.last_name
+            session.id = resp.id
+
+        getFriends: (callback) ->
+            FB.api('/me/friends', (friends)->
+                friends_original = friends.data
+                friends_mapped = $.map(friends_original, (elementOfArray, indexInArray) ->
+                    name_parts = elementOfArray.split(' ')
+
+                    first_name = ''
+                    last_name = ''
+
+                    if name_parts.length >= 2
+                        first_name = name_parts[0]
+                        last_name = name_parts[1]
+                    else
+                        first_name = elementOfArray.name
+
+                    id: elementOfArray.id, name: elementOfArray.name, first_name: first_name, last_name: last_name
+                )
+                callback(friends_mapped)
+            )
 
 
     class window.FacebookBackend
-        @login: (@callback)->
+        @login: (callback, scope={scope: 'email'})->
             FB.login((response) ->
                 FB.api('/me', (me)->
                     callback(FacebookSession.initWith(me))
                 )
-            )
+            ,scope)

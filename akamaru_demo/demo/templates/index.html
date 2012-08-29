@@ -10,26 +10,34 @@
     <script type="text/javascript" src="{{ STATIC_URL}}kiba/js/kiba.js"></script>
 
     <script type="text/javascript">
-    	$(function(){
-    		$('#login-google').click(function(){
-    			GoogleBackend.login(function(data){
-    				alert(data.first_name);
-    			});
-    			return false;
-    		});
-    		$('#login-vk').click(function(){
-    			VkontakteBackend.login(function(data){
-    				alert(data.first_name);
-    			});
-    			return false;
-    		});
-    		$('#login-fb').click(function(){
-    			FacebookBackend.login(function(data){
-    				alert(data.first_name);
-    			});
-    			return false;
-    		});
-    	});
+        $(function(){
+            function renderFriends(session){
+                $('#info').empty();
+                session.getFriends(function(friends){
+                    for (var i = friends.length - 1; i >= 0; i--) {
+                        $('#info').append('<p>' + friends[i].first_name + ' ' + friends[i].last_name + '</p>')
+                    };
+                });
+            };
+
+            $('#login-google').click(function(){
+                GoogleBackend.login(function(session){
+                });
+                return false;
+            });
+            $('#login-vk').click(function(){
+                VkontakteBackend.login(function(session){
+                    renderFriends(session);
+                });
+                return false;
+            });
+            $('#login-fb').click(function(){
+                FacebookBackend.login(function(session){
+                    renderFriends(session);
+                });
+                return false;
+            });
+        });
     </script>
 </head>
 <body>
@@ -49,6 +57,8 @@
     <li><a href="#" id="login-vk">VK Login</a></li>
     <li><a href="#" id="login-fb">FB Login</a></li>
 </ul>
+
+<div id="info"></div>
 
 {% init_socials %}
 
