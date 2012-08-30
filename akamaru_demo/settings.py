@@ -109,6 +109,9 @@ GOOGLE_CONSUMER_SECRET = 'anonymous'
 GOOGLE_CLIENT_ID = '1018162325150.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = 'TE7bE_kGqoDZ4HXyccohb6kC'
 
+AKAMARU_RESOLVE_FORM = 'akamaru-resolve'
+AKAMARU_LOGIN_OK = 'profile'
+
 try:
     from local_settings import *
 except:

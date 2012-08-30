@@ -11,6 +11,15 @@
 <p>First name: {{user.first_name}}</p>
 <p>Last name: {{user.last_name}}</p>
 <p>Email: {{user.email}}</p>
+<p>Country: {{session.me.country}}</p>
+<p>City: {{session.me.city}}</p>
+<p>Friends:</p>
+
+<ul>
+    {% for friend in session.getFriends %}
+        <li>{{ friend.first_name }} {{ friend.last_name }}</li>
+    {% endfor %}
+</ul>
 
 Social logins:
 <ul>

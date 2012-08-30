@@ -14,5 +14,7 @@ def index(request):
 
 @login_required
 def profile(request):
-    return render(request, "profile.html", {'user': request.user })
+    workflow = get_workflow(request)
+    session = workflow.get_session()
+    return render(request, "profile.html", {'user': request.user, 'session': session })
 

@@ -76,7 +76,36 @@ class FacebookSession(AkamaruSession):
 
     def me(self):
         url = self.get_api_url('me')
-        return json.loads(requests.get(url).text)
+        me = json.loads(requests.get(url).text)
+
+        location_parts = me['location']['name'].split(', ')
+        if len(location_parts) >= 2:
+            me['city'] = location_parts[0]
+            me['country'] = location_parts[1]
+        else:
+            me['city'] = me.location
+            me['country'] = ''
+
+        return me
+
+    def getFriends(self):
+        url = self.get_api_url('me/friends')
+        resp = json.loads(requests.get(url).text)
+        friends = resp['data']
+
+        def map_name(friend):
+            name_parts = friend['name'].split(' ')
+
+            if len(name_parts) >= 2:
+                friend['first_name'] = name_parts[0]
+                friend['last_name'] = name_parts[1]
+            else:
+                friend['first_name'] = friend.name
+                friend['last_name'] = ''
+
+            return friend
+
+        return map(map_name, friends)
 
     def is_token_expired(self):
         """

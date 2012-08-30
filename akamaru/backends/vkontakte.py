@@ -78,13 +78,35 @@ class VkontakteSession(AkamaruSession):
         return url
 
     def me(self):
-        url = self.get_api_url('users.get', **{"uids": self.user_id})
+        url = self.get_api_url('users.get', **{"uids": self.user_id, 'fields': 'city,country,photo,photo_medium,photo_medium_rec,photo_big,photo_rec'})
 
         resp = json.loads(requests.get(url).text)
         profile = resp['response'][0]
         profile.update({'id': profile['uid']})
 
+        if profile['country']:
+            urlGetCountries = self.get_api_url('getCountries', **{"cids": profile['country']})
+            resp = json.loads(requests.get(urlGetCountries).text)
+            profile['country'] = resp['response'][0]['name']
+
+        if profile['city']:
+            urlGetCities = self.get_api_url('getCities', **{"cids": profile['city']})
+            resp = json.loads(requests.get(urlGetCities).text)
+            profile['city'] = resp['response'][0]['name']
+
         return profile
+
+    def getFriends(self):
+        url = self.get_api_url('friends.get', **{'fields': 'uid,first_name,last_name,nickname,sex,bdate,city,country,photo,photo_medium,photo_big'})
+        resp = json.loads(requests.get(url).text)
+        friends = resp['response']
+
+        def map_friend(friend):
+            friend['id'] = friend['uid']
+            return friend
+
+        return map(map_friend, friends)
+
 
     def is_token_expired(self):
         """
