@@ -87,12 +87,14 @@ class VkontakteSession(AkamaruSession):
         if profile['country']:
             urlGetCountries = self.get_api_url('getCountries', **{"cids": profile['country']})
             resp = json.loads(requests.get(urlGetCountries).text)
-            profile['country'] = resp['response'][0]['name']
+            if len(resp['response']):
+                profile['country'] = resp['response'][0]['name']
 
         if profile['city']:
             urlGetCities = self.get_api_url('getCities', **{"cids": profile['city']})
             resp = json.loads(requests.get(urlGetCities).text)
-            profile['city'] = resp['response'][0]['name']
+            if len(resp['response']):
+                profile['city'] = resp['response'][0]['name']
 
         return profile
 
