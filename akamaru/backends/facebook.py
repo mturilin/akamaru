@@ -78,12 +78,16 @@ class FacebookSession(AkamaruSession):
         url = self.get_api_url('me')
         me = json.loads(requests.get(url).text)
 
-        location_parts = me['location']['name'].split(', ')
-        if len(location_parts) >= 2:
-            me['city'] = location_parts[0]
-            me['country'] = location_parts[1]
+        if 'location' in me.keys():
+            location_parts = me['location']['name'].split(', ')
+            if len(location_parts) >= 2:
+                me['city'] = location_parts[0]
+                me['country'] = location_parts[1]
+            else:
+                me['city'] = me.location
+                me['country'] = ''
         else:
-            me['city'] = me.location
+            me['city'] = ''
             me['country'] = ''
 
         return me
