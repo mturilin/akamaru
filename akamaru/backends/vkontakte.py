@@ -24,6 +24,9 @@ class VkontakteBackend(AkamaruBackend):
     def get_client_secret(self):
         return settings_getattr(VKONTAKTE_SECRET_KEY)
 
+    def get_scope(self):
+        return 'friends'
+
     def get_session(self, **kwargs):
         vk_session = None
         if self.get_backend_name() in kwargs:
@@ -53,8 +56,8 @@ class VkontakteBackend(AkamaruBackend):
 
 
     def get_login_url(self, request):
-        return "http://api.vk.com/oauth/authorize?client_id=%s&redirect_uri=%s" % (
-            self.get_client_key(), self.get_redirect_url(request))
+        return "http://api.vk.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s" % (
+            self.get_client_key(), self.get_redirect_url(request), self.get_scope())
 
 
     def get_authorize_url(self, request, code):
@@ -99,15 +102,19 @@ class VkontakteSession(AkamaruSession):
         return profile
 
     def getFriends(self):
-        url = self.get_api_url('friends.get', **{'fields': 'uid,first_name,last_name,nickname,sex,bdate,city,country,photo,photo_medium,photo_big'})
+        url = self.get_api_url('friends.get', **{'fields': 'uid,first_name,last_name,nickname,sex,city,country,photo,photo_medium,photo_big'})
         resp = json.loads(requests.get(url).text)
-        friends = resp['response']
 
-        def map_friend(friend):
-            friend['id'] = friend['uid']
-            return friend
+        if 'response' in resp:
+            friends = resp['response']
 
-        return map(map_friend, friends)
+            def map_friend(friend):
+                friend['id'] = friend['uid']
+                return friend
+
+            return map(map_friend, friends)
+
+        return []
 
 
     def is_token_expired(self):

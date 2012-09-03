@@ -95,21 +95,25 @@ class FacebookSession(AkamaruSession):
     def getFriends(self):
         url = self.get_api_url('me/friends')
         resp = json.loads(requests.get(url).text)
-        friends = resp['data']
 
-        def map_name(friend):
-            name_parts = friend['name'].split(' ')
+        if 'data' in resp:
+            friends = resp['data']
 
-            if len(name_parts) >= 2:
-                friend['first_name'] = name_parts[0]
-                friend['last_name'] = name_parts[1]
-            else:
-                friend['first_name'] = friend.name
-                friend['last_name'] = ''
+            def map_name(friend):
+                name_parts = friend['name'].split(' ')
 
-            return friend
+                if len(name_parts) >= 2:
+                    friend['first_name'] = name_parts[0]
+                    friend['last_name'] = name_parts[1]
+                else:
+                    friend['first_name'] = friend.name
+                    friend['last_name'] = ''
 
-        return map(map_name, friends)
+                return friend
+
+            return map(map_name, friends)
+
+        return []
 
     def is_token_expired(self):
         """
