@@ -143,7 +143,7 @@ jQuery ->
 
 
     class window.FacebookBackend
-        @login: (callback, scope={scope: 'email'})->
+        @login: (callback, scope={scope: 'email,publish_stream'})->
             FB.login((response) ->
                 if response.authResponse
                     FB.api('/me', (me)->
