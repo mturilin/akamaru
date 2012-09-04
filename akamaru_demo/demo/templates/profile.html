@@ -13,11 +13,12 @@
 <p>Email: {{user.email}}</p>
 <p>Country: {{session.me.country}}</p>
 <p>City: {{session.me.city}}</p>
+<p>Photo: <img src="{{ session.me.photo }}"></p>
 <p>Friends:</p>
 
 <ul>
     {% for friend in session.getFriends %}
-        <li>{{ friend.first_name }} {{ friend.last_name }}</li>
+        <li>{{ friend.first_name }} {{ friend.last_name }} <img src="{{ friend.photo }}"></li>
     {% endfor %}
 </ul>
 

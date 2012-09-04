@@ -75,7 +75,7 @@ class FacebookSession(AkamaruSession):
         return url
 
     def me(self):
-        url = self.get_api_url('me')
+        url = self.get_api_url('me', fields='picture')
         me = json.loads(requests.get(url).text)
 
         if 'location' in me.keys():
@@ -89,6 +89,8 @@ class FacebookSession(AkamaruSession):
         else:
             me['city'] = ''
             me['country'] = ''
+
+        me['photo'] = me.get('picture', '')
 
         return me
 
@@ -108,6 +110,8 @@ class FacebookSession(AkamaruSession):
                 else:
                     friend['first_name'] = friend.name
                     friend['last_name'] = ''
+
+                friend['photo'] = 'https://graph.facebook.com/%s/picture' % friend['id']
 
                 return friend
 
