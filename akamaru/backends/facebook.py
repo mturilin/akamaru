@@ -75,7 +75,7 @@ class FacebookSession(AkamaruSession):
         return url
 
     def me(self):
-        url = self.get_api_url('me', fields='picture')
+        url = self.get_api_url('me', fields='picture,first_name,last_name,email,location')
         me = json.loads(requests.get(url).text)
 
         if 'location' in me.keys():

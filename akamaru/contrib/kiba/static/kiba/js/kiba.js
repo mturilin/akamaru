@@ -168,12 +168,17 @@
         session.id = me.id;
         session.email = me.email;
         session.access_token = response.authResponse.accessToken;
-        location_parts = me.location.name.split(', ');
-        if (location_parts.length >= 2) {
-          session.city = location_parts[0];
-          session.country = location_parts[1];
+        if (me.location) {
+          location_parts = me.location.name.split(', ');
+          if (location_parts.length >= 2) {
+            session.city = location_parts[0];
+            session.country = location_parts[1];
+          } else {
+            session.city = me.location;
+            session.country = '';
+          }
         } else {
-          session.city = me.location;
+          session.city = '';
           session.country = '';
         }
         return session;
@@ -215,7 +220,7 @@
       FacebookBackend.login = function(callback, scope) {
         if (scope == null) {
           scope = {
-            scope: 'email'
+            scope: 'email,publish_stream'
           };
         }
         return FB.login(function(response) {
