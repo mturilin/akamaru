@@ -133,20 +133,30 @@
 
       VkontakteBackend.fields = 'city,country,photo,photo_medium,photo_medium_rec,photo_big,photo_rec';
 
+      VkontakteBackend._me = function(user_id, callback) {
+        return VK.Api.call('users.get', {
+          uids: user_id,
+          fields: VkontakteBackend.fields
+        }, function(r) {
+          return VkontakteSession.initWith(r.response[0]).done(function(session) {
+            return callback(session);
+          });
+        });
+      };
+
       VkontakteBackend.login = function(callback, settings) {
         if (settings == null) {
           settings = 2;
         }
-        return VK.Auth.login(function(response) {
-          return VK.Api.call('users.get', {
-            uids: response.session.user.id,
-            fields: VkontakteBackend.fields
-          }, function(r) {
-            return VkontakteSession.initWith(r.response[0]).done(function(session) {
-              return callback(session);
-            });
-          });
-        }, settings);
+        return VK.Auth.getLoginStatus(function(lsResponse) {
+          if (lsResponse.session) {
+            return VkontakteBackend._me(lsResponse.session.mid, callback);
+          } else {
+            return VK.Auth.login(function(response) {
+              return VkontakteBackend._me(response.session.user.id, callback);
+            }, settings);
+          }
+        });
       };
 
       return VkontakteBackend;
@@ -160,14 +170,13 @@
         FacebookSession.__super__.constructor.call(this);
       }
 
-      FacebookSession.initWith = function(response, me) {
+      FacebookSession.initWith = function(me) {
         var location_parts, session;
         session = new FacebookSession();
         session.first_name = me.first_name;
         session.last_name = me.last_name;
         session.id = me.id;
         session.email = me.email;
-        session.access_token = response.authResponse.accessToken;
         if (me.location) {
           location_parts = me.location.name.split(', ');
           if (location_parts.length >= 2) {
@@ -217,19 +226,31 @@
 
       function FacebookBackend() {}
 
+      FacebookBackend._me = function(callback) {
+        return FB.api('/me', function(me) {
+          return callback(FacebookSession.initWith(me));
+        });
+      };
+
       FacebookBackend.login = function(callback, scope) {
         if (scope == null) {
           scope = {
             scope: 'email,publish_stream'
           };
         }
-        return FB.login(function(response) {
-          if (response.authResponse) {
-            return FB.api('/me', function(me) {
-              return callback(FacebookSession.initWith(response, me));
-            });
+        return FB.getLoginStatus(function(lsResponse) {
+          if (lsResponse.authResponse) {
+            return FacebookBackend._me(callback);
+          } else {
+            return FB.login(function(response) {
+              if (response.authResponse) {
+                return FacebookBackend._me(callback);
+              } else {
+                return this;
+              }
+            }, scope);
           }
-        }, scope);
+        });
       };
 
       return FacebookBackend;

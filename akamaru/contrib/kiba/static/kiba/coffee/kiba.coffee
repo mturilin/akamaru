@@ -87,29 +87,34 @@ jQuery ->
     class window.VkontakteBackend
         @fields: 'city,country,photo,photo_medium,photo_medium_rec,photo_big,photo_rec'
 
+        @_me: (user_id, callback)->
+            VK.Api.call('users.get', {uids: user_id, fields: VkontakteBackend.fields}, (r) ->
+                VkontakteSession.initWith(r.response[0])
+                    .done((session)->
+                        callback(session)
+                    )
+            )
+
         @login: (callback, settings=2)->
-            VK.Auth.login((response) ->
-                VK.Api.call('users.get', {uids: response.session.user.id, fields: VkontakteBackend.fields}, (r) ->
-                    VkontakteSession.initWith(r.response[0])
-                        .done((session)->
-                            callback(session)
-                        )
-                )
-            ,settings)
+            VK.Auth.getLoginStatus (lsResponse) ->
+                if lsResponse.session
+                    VkontakteBackend._me(lsResponse.session.mid, callback)
+                else
+                    VK.Auth.login((response) ->
+                        VkontakteBackend._me(response.session.user.id, callback)
+                    ,settings)
 
 
     class FacebookSession extends KibaSession
         constructor: ->
             super()
 
-        @initWith: (response, me) ->
+        @initWith: (me) ->
             session = new FacebookSession()
             session.first_name = me.first_name
             session.last_name = me.last_name
             session.id = me.id
             session.email = me.email
-
-            session.access_token = response.authResponse.accessToken
 
             if me.location
                 location_parts = me.location.name.split(', ')
@@ -147,10 +152,22 @@ jQuery ->
 
 
     class window.FacebookBackend
+        @_me: (callback)->
+            FB.api('/me', (me)->
+                callback(FacebookSession.initWith(me))
+            )
+
         @login: (callback, scope={scope: 'email,publish_stream'})->
-            FB.login((response) ->
-                if response.authResponse
-                    FB.api('/me', (me)->
-                        callback(FacebookSession.initWith(response, me))
-                    )
-            ,scope)
+            FB.getLoginStatus (lsResponse) ->
+                if lsResponse.authResponse
+                    FacebookBackend._me(callback)
+                else
+                    FB.login((response) ->
+                        if response.authResponse
+                            FacebookBackend._me(callback)
+                        else
+                            @
+                    ,scope)
+
+
+
