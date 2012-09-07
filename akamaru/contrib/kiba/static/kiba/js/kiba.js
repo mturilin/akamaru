@@ -88,30 +88,34 @@
       }
 
       VkontakteSession.initWith = function(resp) {
-        var dfd, dfd_counter, session;
+        var dfd, dfd_counter, session, try_resolve_dfd;
         session = new VkontakteSession();
         session.first_name = resp.first_name;
         session.last_name = resp.last_name;
         session.id = resp.uid;
         dfd = $.Deferred();
         dfd_counter = 0;
+        try_resolve_dfd = function(r, key) {
+          if (r.response && r.response.length) {
+            session[key] = r.response[0].name;
+          } else {
+            session[key] = '';
+          }
+          if (dfd_counter === 2) {
+            return dfd.resolve(session);
+          }
+        };
         VK.Api.call('getCities', {
           cids: resp.city
         }, function(r) {
           dfd_counter += 1;
-          session.city = r.response[0].name;
-          if (dfd_counter === 2) {
-            return dfd.resolve(session);
-          }
+          return try_resolve_dfd(r, 'city');
         });
         VK.Api.call('getCountries', {
           cids: resp.country
         }, function(r) {
           dfd_counter += 1;
-          session.country = r.response[0].name;
-          if (dfd_counter === 2) {
-            return dfd.resolve(session);
-          }
+          return try_resolve_dfd(r, 'country');
         });
         return dfd;
       };
