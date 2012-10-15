@@ -10,10 +10,10 @@ def init_socials(socials='vk,fb,google'):
     return {
         'socials': socials,
 
-        'GOOGLE_CLIENT_ID': getattr(settings, 'GOOGLE_CLIENT_ID'),
-        'GOOGLE_CLIENT_SECRET': getattr(settings, 'GOOGLE_CLIENT_SECRET'),
+        'GOOGLE_CLIENT_ID': getattr(settings, 'GOOGLE_CLIENT_ID', ''),
+        'GOOGLE_CLIENT_SECRET': getattr(settings, 'GOOGLE_CLIENT_SECRET',''),
         
-        'VKONTAKTE_APP_ID': getattr(settings, 'VKONTAKTE_APP_ID'),
+        'VKONTAKTE_APP_ID': getattr(settings, 'VKONTAKTE_APP_ID',''),
 
-        'FACEBOOK_APP_ID': getattr(settings, 'FACEBOOK_APP_ID'),  
+        'FACEBOOK_APP_ID': getattr(settings, 'FACEBOOK_APP_ID',''),
     }
