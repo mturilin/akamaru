@@ -108,7 +108,7 @@ class FacebookSession(AkamaruSession):
                     friend['first_name'] = name_parts[0]
                     friend['last_name'] = name_parts[1]
                 else:
-                    friend['first_name'] = friend.name
+                    friend['first_name'] = friend['name']
                     friend['last_name'] = ''
 
                 friend['photo'] = 'https://graph.facebook.com/%s/picture' % friend['id']
