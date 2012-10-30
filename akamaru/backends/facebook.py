@@ -13,6 +13,7 @@ __author__ = 'mturilin'
 
 FACEBOOK_APP_ID_KEY = 'FACEBOOK_APP_ID'
 FACEBOOK_SECRET_KEY = 'FACEBOOK_SECRET'
+FACEBOOK_SCOPE = 'FACEBOOK_SCOPE'
 
 class FacebookBackend(AkamaruBackend):
     def get_backend_name(self):
@@ -51,9 +52,14 @@ class FacebookBackend(AkamaruBackend):
         return fb_session
 
     def get_login_url(self, request):
-        return "https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s" % (
-            self.get_client_key(), self.get_redirect_url(request))
-
+        params = [
+            "client_id=%s" % self.get_client_key(),
+            "redirect_uri=%s" % self.get_redirect_url(request)
+        ]
+        if FACEBOOK_SCOPE in settings:
+            params.append("scope=%s" % settings_getattr(FACEBOOK_SCOPE))
+        param_str = "&".join(params)
+        return "https://www.facebook.com/dialog/oauth?%s" % param_str
 
     def get_authorize_url(self, request, code):
         return "https://graph.facebook.com/oauth/access_token?client_id=%s&redirect_uri=%s&client_secret=%s&code=%s" %\
