@@ -4,3 +4,7 @@
 
 /site/
 /.idea/
+akamaru.egg-info/
+akamaru/.idea/
+build
+dist
