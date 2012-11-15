@@ -56,7 +56,7 @@ class FacebookBackend(AkamaruBackend):
             "client_id=%s" % self.get_client_key(),
             "redirect_uri=%s" % self.get_redirect_url(request)
         ]
-        if FACEBOOK_SCOPE in settings:
+        if hasattr(settings, FACEBOOK_SCOPE):
             params.append("scope=%s" % settings_getattr(FACEBOOK_SCOPE))
         param_str = "&".join(params)
         return "https://www.facebook.com/dialog/oauth?%s" % param_str
