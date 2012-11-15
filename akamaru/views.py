@@ -23,7 +23,7 @@ def callback(request, backend_name):
             raise AkamaruError("Workflow")
     except AkamaruError:
         traceback.print_exc(file=sys.stdout)
-        if AKAMARU_ILLEGAL_STATE_REDIRECT in settings:
+        if hasattr(settings, AKAMARU_ILLEGAL_STATE_REDIRECT):
             akamaru_illegal_state_redirect = settings_getattr(AKAMARU_ILLEGAL_STATE_REDIRECT)
             return HttpResponseRedirect(akamaru_illegal_state_redirect)
         return HttpResponseRedirect('/')
