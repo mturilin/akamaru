@@ -1,19 +1,18 @@
+# -*- coding: utf-8 -*-
+__author__ = 'mturilin'
+
 import json
 import urlparse
-from urllib import urlencode
-
-from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
-from akamaru.models import SocialUser
-
-from django.conf import settings
-from django.contrib.auth.models import User
 import requests
+from urllib import urlencode
+from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
+from django.conf import settings
 
-__author__ = 'mturilin'
 
 FACEBOOK_APP_ID_KEY = 'FACEBOOK_APP_ID'
 FACEBOOK_SECRET_KEY = 'FACEBOOK_SECRET'
 FACEBOOK_SCOPE = 'FACEBOOK_SCOPE'
+
 
 class FacebookBackend(AkamaruBackend):
     def get_backend_name(self):
@@ -82,6 +81,7 @@ class FacebookSession(AkamaruSession):
 
     def me(self):
         url = self.get_api_url('me', fields='picture,first_name,last_name,email,location')
+        print url
         me = json.loads(requests.get(url).text)
 
         if 'location' in me.keys():

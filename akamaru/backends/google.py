@@ -1,21 +1,16 @@
+# -*- coding: utf-8 -*-
+__author__ = 'pkorzh'
+
 import json
-import urlparse
-from akamaru import AkamaruOAuth1Backend, AkamaruSession, BackendError, settings_getattr
-from akamaru.models import SocialUser
-
-from django.conf import settings
-from django.contrib.auth.models import User
 import requests
-
+from akamaru import AkamaruOAuth1Backend, AkamaruSession, settings_getattr
 from oauthlib.oauth1 import Client
 from oauthlib.oauth1.rfc5849 import SIGNATURE_TYPE_QUERY
 
-from django.conf import settings
-
-__author__ = 'pkorzh'
 
 GOOGLE_CONSUMER_KEY_KEY = 'GOOGLE_CONSUMER_KEY'
 GOOGLE_CONSUMER_SECRET_KEY = 'GOOGLE_CONSUMER_SECRET'
+
 
 class GoogleBackend(AkamaruOAuth1Backend):
     def get_backend_name(self):

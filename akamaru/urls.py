@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 from akamaru.views import start_login, callback
 from akamaru.contrib.resolve.views import resolve
-from django.conf.urls.defaults import url, patterns
+from django.conf.urls import url, patterns
 
 __author__ = 'mturilin'
 

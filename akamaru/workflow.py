@@ -1,11 +1,15 @@
+# -*- coding: utf-8 -*-
+__author__ = 'mturilin'
+
 from akamaru import get_backend_dict, settings_getattr, RESOLVE_FORM_KEY, LOGIN_OK_KEY, LOGIN_ERROR_KEY
 from django.conf import settings
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
-__author__ = 'mturilin'
+
+User = get_user_model()
 
 
 class LoginWorkflow(object):
@@ -34,7 +38,6 @@ class LoginWorkflow(object):
             return redirect(reverse(settings_getattr(LOGIN_ERROR_KEY)))
 
         return redirect(reverse(resolve_user))
-
 
     def create_user(self, request, username, first_name, last_name, email, password):
         user = User(username=username, first_name=first_name, last_name=last_name, email=email, password=password)

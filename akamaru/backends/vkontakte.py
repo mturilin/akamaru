@@ -1,18 +1,15 @@
-import json
-import urlparse
-from urllib import urlencode
-
-from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
-from akamaru.models import SocialUser
-
-from django.conf import settings
-from django.contrib.auth.models import User
-import requests
-
+# -*- coding: utf-8 -*-
 __author__ = 'pkorzh'
+
+import json
+import requests
+from urllib import urlencode
+from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
+
 
 VKONTAKTE_APP_ID_KEY = 'VKONTAKTE_APP_ID'
 VKONTAKTE_SECRET_KEY = 'VKONTAKTE_SECRET'
+
 
 class VkontakteBackend(AkamaruBackend):
     def get_backend_name(self):
@@ -54,11 +51,9 @@ class VkontakteBackend(AkamaruBackend):
 
         return vk_session
 
-
     def get_login_url(self, request):
         return "http://api.vk.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s" % (
             self.get_client_key(), self.get_redirect_url(request), self.get_scope())
-
 
     def get_authorize_url(self, request, code):
         return "https://api.vk.com/oauth/token?client_id=%s&code=%s&client_secret=%s" %\
@@ -115,7 +110,6 @@ class VkontakteSession(AkamaruSession):
             return map(map_friend, friends)
 
         return []
-
 
     def is_token_expired(self):
         """

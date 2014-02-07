@@ -15,8 +15,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'test.db',
-        }
+        'NAME': 'test.db'}
 }
 
 TIME_ZONE = 'America/Chicago'
@@ -27,7 +26,7 @@ USE_I18N = True
 USE_L10N = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT= ''
+STATIC_ROOT = ''
 
 MEDIA_ROOT = ''
 ADMIN_MEDIA_PREFIX = '/admin-media/'
@@ -38,7 +37,7 @@ SECRET_KEY = 't2eo^kd%k+-##ml3@_x__$j0(ps4p0q6eg*c4ttp9d2n(t!iol'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    )
+)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -51,13 +50,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    )
+)
 
 ROOT_URLCONF = 'urls'
 
-TEMPLATE_DIRS = (
-    join(ROOT_PATH, 'templates')
-    )
+TEMPLATE_DIRS = (join(ROOT_PATH, 'templates'),)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -71,17 +68,17 @@ INSTALLED_APPS = (
     'akamaru',
     'akamaru.contrib.resolve',
     'akamaru.contrib.kiba',
-    'demo'
-    )
+    'demo',
+)
 
 AUTHENTICATION_BACKENDS = (
     'akamaru.backends.facebook.FacebookBackend',
-    'akamaru.backends.vkontakte.VkontakteBackend',
-    'akamaru.backends.google.GoogleBackend',
-    'akamaru.backends.trello.TrelloBackend',
+    #'akamaru.backends.vkontakte.VkontakteBackend',
+    #'akamaru.backends.google.GoogleBackend',
+    #'akamaru.backends.trello.TrelloBackend',
 
     'django.contrib.auth.backends.ModelBackend',
-    )
+)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -90,12 +87,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.contrib.messages.context_processors.messages',
-    )
+)
 
 LOGIN_REDIRECT_URL = '/'
 
-FACEBOOK_APP_ID = "170958219629605"
-FACEBOOK_SECRET = "94c30c5265072b5bdf82174125c2d6f9"
+FACEBOOK_APP_ID = "1401655126754132"
+FACEBOOK_SECRET = "4450cde800ec8770ba018c078f7f83e6"
 
 VKONTAKTE_APP_ID = '2642738'
 VKONTAKTE_SECRET = 'oKJ4yoTybg6qoqugUMeY'
