@@ -73,9 +73,9 @@ INSTALLED_APPS = (
 
 AUTHENTICATION_BACKENDS = (
     'akamaru.backends.facebook.FacebookBackend',
-    #'akamaru.backends.vkontakte.VkontakteBackend',
-    #'akamaru.backends.google.GoogleBackend',
-    #'akamaru.backends.trello.TrelloBackend',
+    'akamaru.backends.vkontakte.VkontakteBackend',
+    'akamaru.backends.google.GoogleBackend',
+    'akamaru.backends.trello.TrelloBackend',
 
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -94,8 +94,8 @@ LOGIN_REDIRECT_URL = '/'
 FACEBOOK_APP_ID = "1401655126754132"
 FACEBOOK_SECRET = "4450cde800ec8770ba018c078f7f83e6"
 
-VKONTAKTE_APP_ID = '2642738'
-VKONTAKTE_SECRET = 'oKJ4yoTybg6qoqugUMeY'
+VKONTAKTE_APP_ID = '4202800'
+VKONTAKTE_SECRET = 'SrOkS9KbDD6CsGRCAquC'
 
 TRELLO_API_KEY = '728a6bb4aa0911f0698ca28860c92ad0'
 TRELLO_TOKEN = '73c37c2ad45f56c37aeb00df4c1fa9bcddf1babff1f92507c4442c01e1e9e170'
@@ -103,8 +103,8 @@ TRELLO_TOKEN = '73c37c2ad45f56c37aeb00df4c1fa9bcddf1babff1f92507c4442c01e1e9e170
 GOOGLE_CONSUMER_KEY = 'anonymous'
 GOOGLE_CONSUMER_SECRET = 'anonymous'
 
-GOOGLE_CLIENT_ID = '1018162325150.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = 'TE7bE_kGqoDZ4HXyccohb6kC'
+GOOGLE_CLIENT_ID = u'757723933215.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = u'AIzaSyA5mtCAJU-hXo4pVTTL7NffbrGJE5pkIY8'
 
 AKAMARU_RESOLVE_FORM = 'akamaru-resolve'
 AKAMARU_LOGIN_OK = 'profile'

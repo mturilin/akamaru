@@ -56,8 +56,8 @@ class VkontakteBackend(AkamaruBackend):
             self.get_client_key(), self.get_redirect_url(request), self.get_scope())
 
     def get_authorize_url(self, request, code):
-        return "https://api.vk.com/oauth/token?client_id=%s&code=%s&client_secret=%s" %\
-               (self.get_client_key(), code, self.get_client_secret())
+        return u"https://oauth.vk.com/access_token?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s" % \
+               (self.get_client_key(), self.get_client_secret(), code, self.get_redirect_url(request))
 
 
 class VkontakteSession(AkamaruSession):
