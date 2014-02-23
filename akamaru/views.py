@@ -4,10 +4,10 @@ __author__ = 'mturilin'
 import traceback
 import sys
 from django.conf import settings
+from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.shortcuts import redirect
 from akamaru import get_backend_dict, get_workflow, set_workflow, AkamaruError, settings_getattr
 from akamaru.workflow import LoginWorkflow
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
 
 
 AKAMARU_ILLEGAL_STATE_REDIRECT = "AKAMARU_ILLEGAL_STATE_REDIRECT"
@@ -33,3 +33,9 @@ def callback(request, backend_name):
     request.session.modified = True
     return workflow.authenticate(**{'request': request})
 
+
+def shut_off(request, backend_name):
+    if not request.user.is_authenticated():
+        return HttpResponseForbidden()
+    request.user.social_users.filter(backend=backend_name).delete()
+    return HttpResponseRedirect(request.GET['success_url'])

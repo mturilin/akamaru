@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name = "akamaru",
-    version = "2.0.16",
+    version = "2.0.17",
     author = "Mikhail Turilin",
     author_email = "mturilin@gmail.com",
     description = ("Very simple social auth backend for Django "),
