@@ -81,7 +81,6 @@ class FacebookSession(AkamaruSession):
 
     def me(self):
         url = self.get_api_url('me', fields='picture,first_name,last_name,email,location')
-        print url
         me = json.loads(requests.get(url).text)
 
         if 'location' in me.keys():
@@ -90,7 +89,7 @@ class FacebookSession(AkamaruSession):
                 me['city'] = location_parts[0]
                 me['country'] = location_parts[1]
             else:
-                me['city'] = me.location
+                me['city'] = me['location']
                 me['country'] = ''
         else:
             me['city'] = ''
