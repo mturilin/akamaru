@@ -2,3 +2,4 @@ Django==1.5.5
 path.py
 requests
 oauthlib
+south

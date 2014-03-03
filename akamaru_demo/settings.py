@@ -69,6 +69,7 @@ INSTALLED_APPS = (
     'akamaru.contrib.resolve',
     'akamaru.contrib.kiba',
     'demo',
+    'south',
 )
 
 AUTHENTICATION_BACKENDS = (
