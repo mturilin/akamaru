@@ -10,3 +10,6 @@ class SocialUser(models.Model):
     external_user_id = models.CharField(max_length=255)
     user_name = models.CharField(max_length=255)
     backend = models.CharField(max_length=255)
+
+    def __unicode__(self):
+        return u"%s; %s" % (self.backend, self.user)
