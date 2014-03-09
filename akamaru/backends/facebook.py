@@ -15,6 +15,10 @@ FACEBOOK_SCOPE = 'FACEBOOK_SCOPE'
 
 
 class FacebookBackend(AkamaruBackend):
+
+    class AccessDeniedException(Exception):
+        pass
+
     def get_backend_name(self):
         return 'facebook'
 
@@ -25,6 +29,7 @@ class FacebookBackend(AkamaruBackend):
         return settings_getattr(FACEBOOK_SECRET_KEY)
 
     def get_session(self, **kwargs):
+
         fb_session = None
         if self.get_backend_name() in kwargs:
             auth_obj = kwargs[self.get_backend_name()]
@@ -34,7 +39,10 @@ class FacebookBackend(AkamaruBackend):
                 return auth_obj
 
             request = auth_obj
-            if 'code' not in request.REQUEST:
+
+            if 'error' in request.REQUEST and request.REQUEST['error'] == 'access_denied':
+                raise self.AccessDeniedException()
+            elif 'code' not in request.REQUEST:
                 raise BackendError('Facebook data doesn\'t have "code"')
 
             code = request.REQUEST['code']
