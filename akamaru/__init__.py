@@ -36,6 +36,8 @@ class BackendError(StandardError):
 
 
 class AkamaruSession(object):
+    user_id = None
+
     def get_api_url(self, *args, **kwargs):
         raise NotImplementedError("Subclasses must implement this method.")
 
@@ -62,7 +64,10 @@ class AkamaruBackend(object):
     def authenticate(self, **kwargs):
         if self.get_backend_name() in kwargs:
             session = kwargs[self.get_backend_name()]
-            user = session.me()
+            if session.user_id:
+                user = {'id': session.user_id}
+            else:
+                user = session.me()
 
             try:
                 query = SocialUser.objects.get(backend=self.get_backend_name(), external_user_id=user['id'])
