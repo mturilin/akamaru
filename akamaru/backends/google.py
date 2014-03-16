@@ -84,7 +84,6 @@ class GoogleBackend(AkamaruOAuth1Backend):
         access_token = res_data['access_token']
 
         google_session = GoogleSession(access_token)
-        print google_session.me()
 
         return google_session
 
