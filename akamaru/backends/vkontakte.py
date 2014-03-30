@@ -4,11 +4,12 @@ __author__ = 'pkorzh'
 import json
 import requests
 from urllib import urlencode
-from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
+from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr, PermissionDeniedException
 
 
 VKONTAKTE_APP_ID_KEY = 'VKONTAKTE_APP_ID'
 VKONTAKTE_SECRET_KEY = 'VKONTAKTE_SECRET'
+VKONTAKTE_SCOPE = 'VKONTAKTE_SCOPE'
 
 
 class VkontakteBackend(AkamaruBackend):
@@ -22,11 +23,12 @@ class VkontakteBackend(AkamaruBackend):
         return settings_getattr(VKONTAKTE_SECRET_KEY)
 
     def get_scope(self):
-        return 'friends'
+        return settings_getattr(VKONTAKTE_SCOPE)
 
     def get_session(self, **kwargs):
         vk_session = None
         if self.get_backend_name() in kwargs:
+
             auth_obj = kwargs[self.get_backend_name()]
 
             # auth obj could be session or request
@@ -34,7 +36,9 @@ class VkontakteBackend(AkamaruBackend):
                 return auth_obj
 
             request = auth_obj
-            if 'code' not in request.REQUEST:
+            if 'error' in request.GET and request.GET['error_reason'] == 'user_denied':
+                raise PermissionDeniedException()
+            elif 'code' not in request.REQUEST:
                 raise BackendError('Vkontakte data doesn\'t have "code"')
 
             code = request.REQUEST.get('code')

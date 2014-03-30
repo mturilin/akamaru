@@ -3,7 +3,7 @@ __author__ = 'pkorzh'
 
 import json
 import requests
-from akamaru import AkamaruOAuth1Backend, AkamaruSession, settings_getattr, BackendError
+from akamaru import AkamaruOAuth1Backend, AkamaruSession, settings_getattr, BackendError, PermissionDeniedException
 from django.conf import settings
 
 GOOGLE_CONSUMER_KEY_KEY = 'GOOGLE_CONSUMER_KEY'
@@ -12,8 +12,6 @@ GOOGLE_SCOPE = 'GOOGLE_SCOPE'
 
 
 class GoogleBackend(AkamaruOAuth1Backend):
-    class AccessDeniedException(Exception):
-        pass
 
     def get_backend_name(self):
         return 'google'
@@ -60,9 +58,8 @@ class GoogleBackend(AkamaruOAuth1Backend):
 
         request = auth_obj
         if 'error' in request.REQUEST and request.REQUEST['error'] == 'access_denied':
-            raise self.AccessDeniedException()
-
-        if 'code' not in request.REQUEST:
+            raise PermissionDeniedException()
+        elif 'code' not in request.REQUEST:
             raise BackendError('Google data doesn\'t have "code"')
 
         code = request.REQUEST.get('code')

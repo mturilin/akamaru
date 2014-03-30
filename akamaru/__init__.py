@@ -35,6 +35,10 @@ class BackendError(StandardError):
     pass
 
 
+class PermissionDeniedException(Exception):
+    u""" Нет прав доступа. """
+
+
 class AkamaruSession(object):
     user_id = None
 

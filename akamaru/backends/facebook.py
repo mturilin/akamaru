@@ -5,7 +5,7 @@ import json
 import urlparse
 import requests
 from urllib import urlencode
-from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
+from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr, PermissionDeniedException
 from django.conf import settings
 
 
@@ -15,9 +15,6 @@ FACEBOOK_SCOPE = 'FACEBOOK_SCOPE'
 
 
 class FacebookBackend(AkamaruBackend):
-
-    class AccessDeniedException(Exception):
-        pass
 
     def get_backend_name(self):
         return 'facebook'
@@ -29,7 +26,6 @@ class FacebookBackend(AkamaruBackend):
         return settings_getattr(FACEBOOK_SECRET_KEY)
 
     def get_session(self, **kwargs):
-
         fb_session = None
         if self.get_backend_name() in kwargs:
             auth_obj = kwargs[self.get_backend_name()]
@@ -41,7 +37,7 @@ class FacebookBackend(AkamaruBackend):
             request = auth_obj
 
             if 'error' in request.REQUEST and request.REQUEST['error'] == 'access_denied':
-                raise self.AccessDeniedException()
+                raise PermissionDeniedException()
             elif 'code' not in request.REQUEST:
                 raise BackendError('Facebook data doesn\'t have "code"')
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 __author__ = 'mturilin'
 
-from akamaru import get_backend_dict, settings_getattr, RESOLVE_FORM_KEY, LOGIN_OK_KEY, LOGIN_ERROR_KEY
-from django.conf import settings
+from akamaru import (get_backend_dict, settings_getattr, RESOLVE_FORM_KEY, LOGIN_OK_KEY, LOGIN_ERROR_KEY,
+                     PermissionDeniedException)
 from django.contrib.auth import login, authenticate
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -25,7 +25,11 @@ class LoginWorkflow(object):
     def authenticate(self, *args, **kwargs):
         request = kwargs['request']
 
-        self.session = self.backend.get_session(**{self.backend_name: request})
+        try:
+            self.session = self.backend.get_session(**{self.backend_name: request})
+        except PermissionDeniedException:
+            return redirect(reverse(settings_getattr(LOGIN_ERROR_KEY))+'?error=permission denied')
+
         user = authenticate(**{self.backend_name: self.session})
 
         if user:

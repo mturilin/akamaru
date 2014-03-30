@@ -3,3 +3,4 @@ path.py
 requests
 oauthlib
 south
+mock
