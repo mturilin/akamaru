@@ -23,7 +23,10 @@ class VkontakteBackend(AkamaruBackend):
         return settings_getattr(VKONTAKTE_SECRET_KEY)
 
     def get_scope(self):
-        return settings_getattr(VKONTAKTE_SCOPE)
+        try:
+            return settings_getattr(VKONTAKTE_SCOPE)
+        except:
+            return ''
 
     def get_session(self, **kwargs):
         vk_session = None
