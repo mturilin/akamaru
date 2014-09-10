@@ -1,6 +1,6 @@
 from akamaru import get_backend_dict, settings_getattr, RESOLVE_FORM_KEY, LOGIN_OK_KEY, LOGIN_ERROR_KEY
 from django.conf import settings
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, get_user
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
@@ -36,8 +36,8 @@ class LoginWorkflow(object):
         return redirect(reverse(resolve_user))
 
 
-    def create_user(self, request, username, first_name, last_name, email, password):
-        user = User(username=username, first_name=first_name, last_name=last_name, email=email, password=password)
+    def create_user(self, request, **kwargs):
+        user = get_user_model().objects.create_user(**kwargs)
         user.save()
         social_user = self.backend.create_social_user(user, self.session)
         social_user.user = user
