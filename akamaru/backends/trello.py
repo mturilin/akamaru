@@ -1,15 +1,10 @@
-import json
-import urlparse
-from akamaru import AkamaruOAuth1Backend, AkamaruSession, BackendError, settings_getattr
-from akamaru.models import SocialUser
-
-from django.conf import settings
-from django.contrib.auth.models import User
-import requests
-
-from django.conf import settings
-
+# -*- coding: utf-8 -*-
 __author__ = 'pkorzh'
+
+import json
+import requests
+from akamaru import AkamaruOAuth1Backend, AkamaruSession, settings_getattr
+
 
 class TrelloBackend(AkamaruOAuth1Backend):
     def get_backend_name(self):

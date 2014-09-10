@@ -1,10 +1,15 @@
+# -*- coding: utf-8 -*-
 from akamaru import get_workflow, login_ok_redirect
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 
 from forms import CreateUserForm
 from django.contrib.auth.forms import AuthenticationForm
+
+
+User = get_user_model()
+
 
 def resolve(request):
     def _extract(d, keys):
@@ -19,7 +24,7 @@ def resolve(request):
         workflow.associate_user(request, request.user)
         return login_ok_redirect()
 
-    create_user_form = CreateUserForm(request.POST or None, initial = workflow.get_session().me())
+    create_user_form = CreateUserForm(request.POST or None, initial=workflow.get_session().me())
     login_form = AuthenticationForm(request, request.POST or None)
 
     if create_user_form.is_valid():
@@ -34,7 +39,7 @@ def resolve(request):
         return login_ok_redirect()
     
     elif login_form.is_valid():
-        user = authenticate(username = login_form.cleaned_data['username'], password = login_form.cleaned_data['password'])
+        user = authenticate(username=login_form.cleaned_data['username'], password=login_form.cleaned_data['password'])
         if user and user.is_active:
             workflow.associate_user(request, user)
             login(request, user)

@@ -1,11 +1,15 @@
-from akamaru import get_backend_dict, settings_getattr, RESOLVE_FORM_KEY, LOGIN_OK_KEY, LOGIN_ERROR_KEY
-from django.conf import settings
-from django.contrib.auth import login, authenticate, get_user
-from django.contrib.auth.models import User
+# -*- coding: utf-8 -*-
+__author__ = 'mturilin'
+
+from akamaru import (get_backend_dict, settings_getattr, RESOLVE_FORM_KEY, LOGIN_OK_KEY, LOGIN_ERROR_KEY,
+                     PermissionDeniedException)
+from django.contrib.auth import login, authenticate
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
-__author__ = 'mturilin'
+
+User = get_user_model()
 
 
 class LoginWorkflow(object):
@@ -21,7 +25,11 @@ class LoginWorkflow(object):
     def authenticate(self, *args, **kwargs):
         request = kwargs['request']
 
-        self.session = self.backend.get_session(**{self.backend_name: request})
+        try:
+            self.session = self.backend.get_session(**{self.backend_name: request})
+        except PermissionDeniedException:
+            return redirect(reverse(settings_getattr(LOGIN_ERROR_KEY))+'?error=permission denied')
+
         user = authenticate(**{self.backend_name: self.session})
 
         if user:
@@ -35,9 +43,8 @@ class LoginWorkflow(object):
 
         return redirect(reverse(resolve_user))
 
-
-    def create_user(self, request, **kwargs):
-        user = get_user_model().objects.create_user(**kwargs)
+    def create_user(self, request, username, first_name, last_name, email, password):
+        user = User(username=username, first_name=first_name, last_name=last_name, email=email, password=password)
         user.save()
         social_user = self.backend.create_social_user(user, self.session)
         social_user.user = user

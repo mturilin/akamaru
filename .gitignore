@@ -3,6 +3,7 @@
 *.db
 
 /site/
+/env/
 /.idea/
 akamaru.egg-info/
 akamaru/.idea/

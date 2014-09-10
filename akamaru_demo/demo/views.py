@@ -1,4 +1,5 @@
 from akamaru import get_workflow, login_ok_redirect
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
@@ -16,5 +17,10 @@ def index(request):
 def profile(request):
     workflow = get_workflow(request)
     session = workflow.get_session()
-    return render(request, "profile.html", {'user': request.user, 'session': session })
+    return render(request, "profile.html", {'user': request.user, 'session': session})
+
+
+def error(request):
+    return HttpResponse('error')
+
 

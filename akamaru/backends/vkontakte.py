@@ -1,18 +1,16 @@
-import json
-import urlparse
-from urllib import urlencode
-
-from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
-from akamaru.models import SocialUser
-
-from django.conf import settings
-from django.contrib.auth.models import User
-import requests
-
+# -*- coding: utf-8 -*-
 __author__ = 'pkorzh'
+
+import json
+import requests
+from urllib import urlencode
+from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr, PermissionDeniedException
+
 
 VKONTAKTE_APP_ID_KEY = 'VKONTAKTE_APP_ID'
 VKONTAKTE_SECRET_KEY = 'VKONTAKTE_SECRET'
+VKONTAKTE_SCOPE = 'VKONTAKTE_SCOPE'
+
 
 class VkontakteBackend(AkamaruBackend):
     def get_backend_name(self):
@@ -25,11 +23,15 @@ class VkontakteBackend(AkamaruBackend):
         return settings_getattr(VKONTAKTE_SECRET_KEY)
 
     def get_scope(self):
-        return 'friends'
+        try:
+            return settings_getattr(VKONTAKTE_SCOPE)
+        except:
+            return ''
 
     def get_session(self, **kwargs):
         vk_session = None
         if self.get_backend_name() in kwargs:
+
             auth_obj = kwargs[self.get_backend_name()]
 
             # auth obj could be session or request
@@ -37,7 +39,9 @@ class VkontakteBackend(AkamaruBackend):
                 return auth_obj
 
             request = auth_obj
-            if 'code' not in request.REQUEST:
+            if 'error' in request.GET and request.GET['error_reason'] == 'user_denied':
+                raise PermissionDeniedException()
+            elif 'code' not in request.REQUEST:
                 raise BackendError('Vkontakte data doesn\'t have "code"')
 
             code = request.REQUEST.get('code')
@@ -54,15 +58,13 @@ class VkontakteBackend(AkamaruBackend):
 
         return vk_session
 
-
     def get_login_url(self, request):
         return "http://api.vk.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s" % (
             self.get_client_key(), self.get_redirect_url(request), self.get_scope())
 
-
     def get_authorize_url(self, request, code):
-        return "https://api.vk.com/oauth/token?client_id=%s&code=%s&client_secret=%s" %\
-               (self.get_client_key(), code, self.get_client_secret())
+        return u"https://oauth.vk.com/access_token?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s" % \
+               (self.get_client_key(), self.get_client_secret(), code, self.get_redirect_url(request))
 
 
 class VkontakteSession(AkamaruSession):
@@ -115,7 +117,6 @@ class VkontakteSession(AkamaruSession):
             return map(map_friend, friends)
 
         return []
-
 
     def is_token_expired(self):
         """

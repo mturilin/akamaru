@@ -1,21 +1,21 @@
+# -*- coding: utf-8 -*-
+__author__ = 'mturilin'
+
 import json
 import urlparse
-from urllib import urlencode
-
-from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr
-from akamaru.models import SocialUser
-
-from django.conf import settings
-from django.contrib.auth.models import User
 import requests
+from urllib import urlencode
+from akamaru import AkamaruBackend, AkamaruSession, BackendError, settings_getattr, PermissionDeniedException
+from django.conf import settings
 
-__author__ = 'mturilin'
 
 FACEBOOK_APP_ID_KEY = 'FACEBOOK_APP_ID'
 FACEBOOK_SECRET_KEY = 'FACEBOOK_SECRET'
 FACEBOOK_SCOPE = 'FACEBOOK_SCOPE'
 
+
 class FacebookBackend(AkamaruBackend):
+
     def get_backend_name(self):
         return 'facebook'
 
@@ -35,7 +35,10 @@ class FacebookBackend(AkamaruBackend):
                 return auth_obj
 
             request = auth_obj
-            if 'code' not in request.REQUEST:
+
+            if 'error' in request.REQUEST and request.REQUEST['error'] == 'access_denied':
+                raise PermissionDeniedException()
+            elif 'code' not in request.REQUEST:
                 raise BackendError('Facebook data doesn\'t have "code"')
 
             code = request.REQUEST['code']
@@ -90,7 +93,7 @@ class FacebookSession(AkamaruSession):
                 me['city'] = location_parts[0]
                 me['country'] = location_parts[1]
             else:
-                me['city'] = me.location
+                me['city'] = me['location']
                 me['country'] = ''
         else:
             me['city'] = ''

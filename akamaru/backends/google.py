@@ -1,23 +1,18 @@
-import json
-import urlparse
-from akamaru import AkamaruOAuth1Backend, AkamaruSession, BackendError, settings_getattr
-from akamaru.models import SocialUser
-
-from django.conf import settings
-from django.contrib.auth.models import User
-import requests
-
-from oauthlib.oauth1 import Client
-from oauthlib.oauth1.rfc5849 import SIGNATURE_TYPE_QUERY
-
-from django.conf import settings
-
+# -*- coding: utf-8 -*-
 __author__ = 'pkorzh'
+
+import json
+import requests
+from akamaru import AkamaruOAuth1Backend, AkamaruSession, settings_getattr, BackendError, PermissionDeniedException
+from django.conf import settings
 
 GOOGLE_CONSUMER_KEY_KEY = 'GOOGLE_CONSUMER_KEY'
 GOOGLE_CONSUMER_SECRET_KEY = 'GOOGLE_CONSUMER_SECRET'
+GOOGLE_SCOPE = 'GOOGLE_SCOPE'
+
 
 class GoogleBackend(AkamaruOAuth1Backend):
+
     def get_backend_name(self):
         return 'google'
 
@@ -39,27 +34,62 @@ class GoogleBackend(AkamaruOAuth1Backend):
     def _get_session(self, oauth_token, oauth_token_secret):
         return GoogleSession(oauth_token, oauth_token_secret, self.get_client_key(), self.get_client_secret())
 
+    def get_login_url(self, request):
+        return "https://accounts.google.com/o/oauth2/auth?" + \
+            "redirect_uri=%s" % self.get_redirect_url(request) + \
+            "&response_type=code" + \
+            "&client_id=%s" % getattr(settings, GOOGLE_CONSUMER_KEY_KEY, '') + \
+            "&scope=%s" % getattr(settings, GOOGLE_SCOPE, '')
+
+    def get_authorize_url(self):
+        return
+
+    def get_session(self, **kwargs):
+        google_session = None
+
+        if not self.get_backend_name() in kwargs:
+            return google_session
+
+        auth_obj = kwargs[self.get_backend_name()]
+
+        # auth obj could be session or request
+        if isinstance(auth_obj, GoogleSession):
+            return auth_obj
+
+        request = auth_obj
+        if 'error' in request.REQUEST and request.REQUEST['error'] == 'access_denied':
+            raise PermissionDeniedException()
+        elif 'code' not in request.REQUEST:
+            raise BackendError('Google data doesn\'t have "code"')
+
+        code = request.REQUEST.get('code')
+
+        request_result = requests.post(
+            u"https://accounts.google.com/o/oauth2/token",
+            data={
+                'code': code,
+                'client_id': getattr(settings, GOOGLE_CONSUMER_KEY_KEY, ''),
+                'client_secret': getattr(settings, GOOGLE_CONSUMER_SECRET_KEY, ''),
+                'redirect_uri': self.get_redirect_url(request),
+                'grant_type': 'authorization_code'
+            },
+            headers={'content-type': 'application/x-www-form-urlencoded'})
+        res_data = json.loads(request_result.text.strip())
+
+        if 'access_token' not in res_data:
+            raise BackendError("Google didn't return access_token. Response: %s" % request_result.text)
+        access_token = res_data['access_token']
+
+        google_session = GoogleSession(access_token)
+
+        return google_session
+
 
 class GoogleSession(AkamaruSession):
-    def __init__(self, oauth_token, oauth_token_secret, client_key, client_secret):
-        self.oauth_token_secret = oauth_token_secret
-        self.oauth_token = oauth_token
-        self.client_key = client_key
-        self.client_secret = client_secret
+    def __init__(self, access_token):
+        self.access_token = access_token
 
     def me(self):
-        client = Client(client_key = unicode(self.client_key), 
-            client_secret = unicode(self.client_secret), 
-            resource_owner_key = unicode(self.oauth_token), 
-            resource_owner_secret = unicode(self.oauth_token_secret),
-            signature_type = SIGNATURE_TYPE_QUERY)
+        d = requests.get(u"https://www.googleapis.com/oauth2/v1/userinfo?access_token=%s" % (self.access_token,))
+        return json.loads(d.text.strip())
 
-        url = client.sign(unicode('https://www.googleapis.com/oauth2/v1/userinfo?alt=json'))[0]
-        
-        res = json.loads(requests.get(url).text)
-        res.update({'first_name': res.get('given_name'), 'last_name': res.get('family_name')})
-
-        return res
-
-    def is_token_expired(self):
-        return False

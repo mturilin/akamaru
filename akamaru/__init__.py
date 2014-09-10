@@ -1,4 +1,8 @@
+# -*- coding: utf-8 -*-
+__author__ = 'mturilin'
+
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
@@ -12,7 +16,8 @@ import requests
 import urlparse
 import urllib
 
-__author__ = 'mturilin'
+
+User = get_user_model()
 
 LOGIN_OK_KEY = "AKAMARU_LOGIN_OK"
 LOGIN_ERROR_KEY = "AKAMARU_LOGIN_ERROR"
@@ -30,7 +35,13 @@ class BackendError(StandardError):
     pass
 
 
+class PermissionDeniedException(Exception):
+    u""" Нет прав доступа. """
+
+
 class AkamaruSession(object):
+    user_id = None
+
     def get_api_url(self, *args, **kwargs):
         raise NotImplementedError("Subclasses must implement this method.")
 
@@ -57,7 +68,10 @@ class AkamaruBackend(object):
     def authenticate(self, **kwargs):
         if self.get_backend_name() in kwargs:
             session = kwargs[self.get_backend_name()]
-            user = session.me()
+            if session.user_id:
+                user = {'id': session.user_id}
+            else:
+                user = session.me()
 
             try:
                 query = SocialUser.objects.get(backend=self.get_backend_name(), external_user_id=user['id'])
@@ -167,6 +181,7 @@ def settings_getattr(key):
 
 _backend_dict = None
 
+
 def get_class(kls):
     parts = kls.split('.')
     module = ".".join(parts[:-1])
@@ -174,6 +189,7 @@ def get_class(kls):
     for comp in parts[1:]:
         m = getattr(m, comp)
     return m
+
 
 def get_backend_dict():
     global _backend_dict
@@ -186,17 +202,21 @@ def get_backend_dict():
 
     return _backend_dict
 
+
 def get_workflow(request):
     if WORKFLOW_SESSION_KEY not in request.session:
         raise AkamaruError("Session middleware is not set up")
     workflow = request.session[WORKFLOW_SESSION_KEY]
     return workflow
 
+
 def set_workflow(request, workflow):
     request.session[WORKFLOW_SESSION_KEY] = workflow
 
+
 def login_ok_redirect():
     return redirect(reverse(settings_getattr(LOGIN_OK_KEY)))
+
 
 def get_callback_url(backend_name):
     return reverse("akamaru-callback", args=(backend_name,))
